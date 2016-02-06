@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="js/scripts.js"></script>
+
+    <title>Client</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/styles.css" rel="stylesheet">
+
+  </head>
+
+  <body  ng-controller="myCtrl">
+	Add category
+  	<input ng-model='addCategory' />
+  	<button ng-click="categoryAdd()">add category</button>
+    
+  </body>
+</html>
