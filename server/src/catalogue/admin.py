@@ -1,6 +1,10 @@
 from django.contrib import admin
-from .models import Category, Subcategory, Item
+from .models import Category, Item
+from feincms.admin import tree_editor
 
-admin.site.register(Category)
-admin.site.register(Subcategory)
+
+class CaregoryAdmin(tree_editor.TreeEditor):
+    list_display = ('name', )
+
+admin.site.register(Category, CaregoryAdmin)
 admin.site.register(Item)
