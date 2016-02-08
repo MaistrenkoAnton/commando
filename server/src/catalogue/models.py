@@ -1,5 +1,6 @@
 from django.db import models
 import mptt
+from django.core.urlresolvers import reverse
 
 
 class Category(models.Model):
@@ -22,8 +23,12 @@ class Item(models.Model):
     """
     name = models.CharField(max_length=100)
     price = models.IntegerField()
+    image_url = models.ImageField(blank=True)
+    description = models.TextField()
     category = models.ForeignKey(Category)
-    rate = models.IntegerField()
+
+    def get_absolute_url(self):
+        return reverse("itemdetail", kwargs={"pk": self.id, })
 
 
 mptt.register(Category, )
