@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'mptt',
     'feincms',
+    'rest_framework.authtoken',
+    'rest_auth',
     # my apps
     'catalogue',
     'authentication',
@@ -187,6 +189,9 @@ JWT_AUTH = {
 
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
+
+# Registration settings
+LOGIN_ON_REGISTER = True
 
 
 

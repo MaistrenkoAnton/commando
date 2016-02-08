@@ -23,3 +23,4 @@ class ItemAddView(generics.CreateAPIView):
 class CategoryAddView(generics.CreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
