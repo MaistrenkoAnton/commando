@@ -159,7 +159,8 @@ JWT_AUTH = {
     # If you store user_id differently than the default payload handler does, implement this function to fetch user_id from the payload
     # Note: Will be deprecated in favor of JWT_PAYLOAD_GET_USERNAME_HANDLER
     'JWT_PAYLOAD_GET_USER_ID_HANDLER':
-    'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+    # 'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+    'rest_framework_jwt.utils.jwt_response_payload_handler',
     # Responsible for controlling the response data returned after login or refresh. Override to return a custom response such as including the serialized representation of the User
     'JWT_RESPONSE_PAYLOAD_HANDLER':
     'authentication.serializers.jwt_response_payload_handler',

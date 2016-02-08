@@ -13,7 +13,7 @@ class Category(models.Model):
 class Item(models.Model):
     name = models.CharField(max_length=100)
     price = models.IntegerField()
-    Category = models.ForeignKey(Category)
+    category = models.ForeignKey(Category)
 
 
 mptt.register(Category, )
