@@ -15,6 +15,18 @@ class CategoryListView(APIView):
         return Response(serializer.data)
 
 
+class ItemListView(APIView):
+    def get(self, request, pk):
+        item_list = Item.objects.filter(category=pk).order_by('price')
+        serializer = ItemSerializer(item_list, many=True)
+        return Response(serializer.data)
+
+
+class ItemDetailView(generics.RetrieveAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+
 class ItemAddView(generics.CreateAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
