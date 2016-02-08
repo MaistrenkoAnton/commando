@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # third party apps
     'corsheaders',
     'rest_framework',
+    'rest_framework_swagger',
     'mptt',
     'feincms',
     # my apps
@@ -161,7 +162,7 @@ JWT_AUTH = {
     'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
     # Responsible for controlling the response data returned after login or refresh. Override to return a custom response such as including the serialized representation of the User
     'JWT_RESPONSE_PAYLOAD_HANDLER':
-    'authentication.views.jwt_response_payload_handler',
+    'authentication.serializers.jwt_response_payload_handler',
     # 'rest_framework_jwt.utils.jwt_response_payload_handler',
     # This is the secret key used to sign the JWT.
     'JWT_SECRET_KEY': SECRET_KEY,
