@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'feincms',
     # my apps
     'catalogue',
+    'authentication',
 ]
 
 REST_FRAMEWORK = {
