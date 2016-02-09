@@ -12,13 +12,21 @@ class UserSerializer(serializers.ModelSerializer):
         write_only_fields = ('password',)
 
 
+class SafeUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
+
+
+
 def jwt_response_payload_handler(token, user=None, request=None):
     """
     Override base function to return both token and user object (id and username)
     """
     return {
         'token': token,
-        'user': UserSerializer(user).data
+        'user': SafeUserSerializer(user).data
     }
 
 

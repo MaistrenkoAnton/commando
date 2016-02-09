@@ -56,7 +56,7 @@ JWT_AUTH = {
 
     # Enable token refresh functionality. Token issued from rest_framework_jwt.views.obtain_jwt_token
     # will have an orig_iat field
-    'JWT_ALLOW_REFRESH': False,
+    'JWT_ALLOW_REFRESH': True,
 
     # Limit on token refresh, is a datetime.timedelta instance. This is how much time after the original token that
     # future tokens can be refreshed from
