@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 class Category(models.Model):
     """
-    Category of products and subcategories
+    Category of products
     """
     name = models.CharField(max_length=100)
     parent = models.ForeignKey('self', blank=True, null=True, related_name='child')
@@ -30,6 +30,10 @@ class Item(models.Model):
     def get_absolute_url(self):
         return reverse("itemdetail", kwargs={"pk": self.id, })
 
+    def __str__(self):
+        return self.name
+
+    def __unicode__(self):
+        return self.name
 
 mptt.register(Category, )
-
