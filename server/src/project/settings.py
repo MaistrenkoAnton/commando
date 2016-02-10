@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # third party apps
     'corsheaders',
+    'rest_framework_swagger',
     'rest_framework',
     'rest_framework_swagger',
     'mptt',
@@ -146,6 +147,12 @@ STATIC_URL = '/static/'
 
 # Django REST Framework settings
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'files', 'media')
+MEDIA_URL = '/media/'
+
+
 
 # Django REST JWT config
 # ----------------------------------------------------------------------------------------------------------------------

@@ -17,6 +17,15 @@
   	<input ng-model='addCategory' />
   	<button ng-click="categoryAdd()">add category</button>
     <input ng-model="catId">
-    <button ng-click="categoryList()">List category</button>
+    <hr>
+
+    <h2>Caregory: {{ catName }}</h2>
+    <ul ng-repeat = "category in categories">
+      <li ng-click="categoryList(category.id, category.name)">{{ category.name }}</li>
+    </ul>
+
   </body>
+<!--
+CONFLICT TEST COMMIT
+-->
 </html>
