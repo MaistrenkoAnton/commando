@@ -2,33 +2,22 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer for user object
-    """
+class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'password']
-        write_only_fields = ('password',)
+        fields = ('id', 'username', 'password')
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'id': {'read_only': True}
+        }
 
-
-class SafeUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username']
-
-
-
-
-def jwt_response_payload_handler(token, user=None, request=None):
-    """
-    Override base function to return both token and user object (id and username)
-    """
-    return {
-        'token': token,
-        'user': SafeUserSerializer(user).data
-    }
-
-
-
-
+    def create(self, validated_data):
+        """
+        Override base method to hash password before save
+        """
+        user = User(
+            username=validated_data['username']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
