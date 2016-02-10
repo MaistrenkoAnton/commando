@@ -3,8 +3,15 @@ from .models import Category, Item
 from feincms.admin import tree_editor
 
 
-class CaregoryAdmin(tree_editor.TreeEditor):
+class CategoryAdmin(tree_editor.TreeEditor):
     list_display = ('name', )
+    list_filter = ('name', )
 
-admin.site.register(Category, CaregoryAdmin)
-admin.site.register(Item)
+
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'image_url', 'description', 'category')
+    list_filter = ('name', )
+    ordering = ('price', )
+
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Item, ItemAdmin)
