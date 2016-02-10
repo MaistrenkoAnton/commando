@@ -1,8 +1,9 @@
 from rest_framework.response import Response
 from rest_framework import generics
 from .models import Item, Category
-from .serializers import ItemListSerializer, CategoryListSerializer, CategoryAddSerializer, ItemDetailSerializer,\
-                         ItemAddSerializer
+from .serializers import (ItemListSerializer, CategoryListSerializer,
+                          CategoryAddSerializer, ItemDetailSerializer,
+                          ItemAddSerializer)
 from rest_framework.views import APIView
 
 
