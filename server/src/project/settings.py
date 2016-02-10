@@ -44,8 +44,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'mptt',
     'feincms',
-    'rest_framework.authtoken',
-    'rest_auth',
     # my apps
     'catalogue',
     'authentication',
