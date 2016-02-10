@@ -2,7 +2,6 @@ var app = angular.module('myApp', []);
 	app.controller('myCtrl', function($scope, $http){
 		$scope.addCategory = '';
         $scope.catId = '';
-
 		$scope.categoryList = function(id, name){//get list of categories and items
 			$scope.detailItem='';
 			$scope.items=[];
@@ -20,7 +19,7 @@ var app = angular.module('myApp', []);
 					rez.error(function(data){
 						alert(error + data);
 					});
-				}
+			}
 			else{
 				$scope.catId = '';
 				$scope.catName='Root';
@@ -51,7 +50,6 @@ var app = angular.module('myApp', []);
 				rez.error(function(data){
 					alert(error + data);
 				});
-
 		}
 		$scope.categoryList();
 
