@@ -10,4 +10,3 @@ urlpatterns = [
     url(r'^itemlist/(?P<pk>\d+)/$', views.ItemListView.as_view()),
     url(r'^$', views.HomeView.as_view(), name='home'),
 ]
-
