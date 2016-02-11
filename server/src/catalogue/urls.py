@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^categorylist/$', views.CategoryListView.as_view()),
     url(r'^itemdetail/(?P<pk>\d+)/$', views.ItemDetailView.as_view()),
     url(r'^itemlist/(?P<pk>\d+)/$', views.ItemListView.as_view()),
+    url(r'^$', views.HomeView.as_view(), name='home'),
 ]
 

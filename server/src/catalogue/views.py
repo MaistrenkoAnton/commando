@@ -1,3 +1,4 @@
+from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import generics
 from .models import Item, Category
@@ -62,3 +63,10 @@ class CategoryAddView(generics.CreateAPIView):
     """
     queryset = Category.objects.all()
     serializer_class = CategoryAddSerializer
+
+
+class HomeView(TemplateView):
+    """
+    Home view to launch home page
+    """
+    template_name = "main-content.html"

@@ -31,3 +31,8 @@ class UserAddView(generics.CreateAPIView):
             token = generate_token(user)
             user_data = jwt_response_payload_handler(token=token, user=user)
         return Response(user_data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = CreateUserSerializer

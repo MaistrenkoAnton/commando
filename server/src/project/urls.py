@@ -22,6 +22,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^auth/', include('authentication.urls', namespace="auth")),
     url(r'^docs/', include('rest_framework_swagger.urls')),
-    url(r'^', include('catalogue.urls')),
+    url(r'^', include('catalogue.urls', namespace="catalogue")),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
