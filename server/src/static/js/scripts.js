@@ -4,7 +4,7 @@ var app = angular.module('myApp', ['authentication'], function config($httpProvi
         $httpProvider.interceptors.push('AuthInterceptor');
     });
     app.constant('API_URL', 'http://127.0.0.1:8000');
-app.controller('myCtrl', function($scope, $http, UserFactory){
+app.controller('myCtrl', function($scope, $http, UserFactory, API_URL){
     'use strict';
 
 
@@ -86,7 +86,7 @@ app.controller('myCtrl', function($scope, $http, UserFactory){
         }
         var request = {
             method: 'GET',
-            url: 'http://localhost:8000/categorylist/' + $scope.catId
+            url: API_URL + '/categorylist/' + $scope.catId
         };
         var rez = $http(request);
         rez.success(function(data){
@@ -101,7 +101,7 @@ app.controller('myCtrl', function($scope, $http, UserFactory){
     $scope.itemDetail = function(id){// get detail info about item from server
         var request = {
             method: 'GET',
-            url: 'http://localhost:8000/itemdetail/' + id,
+            url: API_URL + '/itemdetail/' + id
         };
         var rez = $http(request);
         rez.success(function(data){
