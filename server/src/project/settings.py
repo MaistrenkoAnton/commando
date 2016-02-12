@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'feincms',
     'cacheback',
     'djcelery',
+    'djangular',
     # my apps
     'catalogue',
     'authentication',
@@ -84,6 +85,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE_CLASSES = [
 
+    'djangular.middleware.DjangularUrlMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -102,7 +104,9 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -162,10 +166,14 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-
+# is used for creating links to static files from templates
 STATIC_URL = '/static/'
+# root to the folder, where all static files are collected
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static")
+# roots for custom static files before they are collected
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 
 # Django REST Framework settings

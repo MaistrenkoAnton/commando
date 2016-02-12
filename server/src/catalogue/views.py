@@ -1,43 +1,10 @@
+from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import generics
 from .models import Item, Category
-from .serializers import (ItemListSerializer, CategoryListSerializer,
-                          CategoryAddSerializer, ItemDetailSerializer,
-                          ItemAddSerializer)
+from .serializers import (ItemListSerializer, CategoryAddSerializer, ItemAddSerializer)
 from rest_framework.views import APIView
-from cacheback.base import Job
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
-invalidate_signals = [post_delete, post_save]
-
-
-@receiver(invalidate_signals, sender=Item)
-def invalidate_item(sender, instance, **kwargs):
-    ItemJob().invalidate(instance.pk)
-
-
-@receiver(invalidate_signals, sender=Category)
-def invalidate_category(sender, instance, **kwargs):
-    print('invalidate_Cat')
-    CategoryListJob().invalidate(instance.parent)
-
-
-class ItemJob(Job):
-    """
-    Send and get detail info item cache
-    """
-    def fetch(self, pk):
-        item = ItemDetailSerializer(Item.objects.get(pk=pk)).data
-        return item
-
-
-class CategoryListJob(Job):
-    """
-    Send and get list categories into cache
-    """
-    def fetch(self, pk=None):
-        category_list = CategoryListSerializer(Category.objects.filter(parent=pk), many=True).data
-        return category_list
+from .jobs import ItemJob, CategoryListJob
 
 
 class ItemDetailView(APIView):
@@ -62,7 +29,7 @@ class CategoryListView(APIView):
 
 class ItemListView(APIView):
     """
-    List Items
+    List Itemspip install -e git+https://github.com/jrief/django-angular#egg=django-angular
     pk -- filter by category
     """
     serializer = ItemListSerializer
@@ -90,3 +57,10 @@ class CategoryAddView(generics.CreateAPIView):
     """
     queryset = Category.objects.all()
     serializer_class = CategoryAddSerializer
+
+
+class HomeView(TemplateView):
+    """
+    Home view to launch home page
+    """
+    template_name = "main-content.html"
