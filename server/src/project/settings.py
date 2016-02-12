@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'mptt',
     'feincms',
+    'djangular',
+
     # my apps
     'catalogue',
     'authentication',
@@ -61,6 +63,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE_CLASSES = [
+    'djangular.middleware.DjangularUrlMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
