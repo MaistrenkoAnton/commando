@@ -1,0 +1,40 @@
+{% extends "index.html" %}
+{% load djangular_tags %}
+{% block content %}
+    <div class="container">
+        <div class="starter-template">
+            <h1 class="text-center">Category <strong ng-bind="catName"></strong></h1>
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Categories: </h3>
+                    <div class="list-group" ng-repeat = "category in categories">
+                        <a href="#" class="list-group-item" ng-click="categoryList(category.id, category.name)" ng-bind="category.name"></a>
+                    </div>
+                    <p ng-hide="categories.length">List of Categories is empty</p>
+                    <button type="button" class="btn btn-info" ng-click="categoryList()">To Main</button>
+                </div>
+                <div class="col-md-4">
+                    <h3>Items: </h3>
+                    <ul ng-repeat = "item in items" class="list-group">
+                        </a><li ng-click="itemDetail(item.id)" class="list-group-item" ng-bind="item.name"></li>
+                    </ul>
+                    <p ng-hide="items.length">List of Items is empty</p>
+                </div>
+                <div class="col-md-4">
+                    <h3>DetailItem: </h3>
+                    <div class="thumbnail" ng-show="detailItem">
+                        <img src="{{ detailItem.image_url }}" alt="">
+                        <div class="caption">
+                            <h4>Item: {% angularjs %}{{ detailItem.name }}{% endangularjs %}</h4>
+                            <p>Price: {% angularjs %}{{ detailItem.price }}{% endangularjs %}</p>
+                            <p>Description: {% angularjs %}{{ detailItem.description }}{% endangularjs %}</p>
+                            <p>Category_id: {% angularjs %}{{ detailItem.category.id }}{% endangularjs %}</p>
+                            <p>Category_name: {% angularjs %}{{ detailItem.category.name }}{% endangularjs %}</p>
+                        </div>
+                    </div>
+                    <p ng-hide="detailItem">No selected Item</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

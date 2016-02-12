@@ -35,6 +35,8 @@ class ItemDetailSerializer(serializers.ModelSerializer):
     Detail Item
     Get by id
     """
+    category = CategoryListSerializer()
+
     class Meta:
         model = Item
         fields = ['id', 'name', 'price', 'category', 'description', 'image_url']
