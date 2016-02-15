@@ -9,7 +9,6 @@ argparse==1.2.1
 billiard==3.3.0.22
 celery==3.1.20
 celery-with-redis==3.0
--e git+https://github.com/jrief/django-angular@cda19fb7501695cd2a9a8694e6096998b40b5741#egg=django_angular-origin/HEAD
 django-cacheback==1.0
 django-celery==3.1.17
 django-cors-headers==1.1.0
