@@ -4,9 +4,7 @@ from rest_framework import generics
 from .serializers import (ItemListSerializer, CategoryAddSerializer, ItemAddSerializer)
 from rest_framework.views import APIView
 from .models import Item, Category
-from django.db.models.signals import post_delete, post_save
 from .jobs import ItemJob, CategoryListJob
-invalidate_signals = [post_delete, post_save]
 
 
 class ItemDetailView(APIView):
