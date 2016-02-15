@@ -1,10 +1,12 @@
 from django.views.generic import TemplateView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework import generics
-from .models import Item, Category
+from .models import Item, Category, Comment
 from .serializers import (ItemListSerializer, CategoryListSerializer,
                           CategoryAddSerializer, ItemDetailSerializer,
-                          ItemAddSerializer)
+                          ItemAddSerializer, CommentAddSerializer)
 from rest_framework.views import APIView
 
 
@@ -70,3 +72,39 @@ class HomeView(TemplateView):
     Home view to launch home page
     """
     template_name = "main-content.html"
+
+
+from rest_framework_jwt.authentication import  JSONWebTokenAuthentication
+
+class CommentAddView(generics.CreateAPIView):
+    """
+    Add comment
+    """
+    permission_classes = (IsAuthenticated,)
+    queryset = Comment.objects.all()
+    serializer_class = CommentAddSerializer
+
+
+    def create(self, request, *args, **kwargs):
+        data = {
+            'text': request.data['text'],
+            'item': kwargs['pk'],
+            'user': request.user.pk,
+        }
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        # print user
+        # new_comment = Comment.objects.create(text=request.data['text'], item=item, user=user)
+        # new_comment.save()
+        # item.comments_total += 1
+        # item.save()
+        headers = self.get_success_headers(serializer.data)
+        item = Item.objects.get(pk=kwargs['pk'])
+        item.comments_total += 1
+        item.save()
+        response_data = {
+            'comments_total': item.comments_total,
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+

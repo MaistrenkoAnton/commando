@@ -6,7 +6,7 @@
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     });
     app.constant('API_URL', 'http://127.0.0.1:8000');
-    app.controller('myCtrl', function($scope, $http, UserFactory, djangoUrl){
+    app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, djangoUrl){
         'use strict';
 
 
@@ -15,6 +15,7 @@
         $scope.login = login;
         $scope.logout = logout;
         $scope.register = register;
+        $scope.setComment = setComment;
         $scope.user_error = 'Error! ';
 
         // initialization
@@ -51,17 +52,36 @@
         }
 
         function register(username, password){
-            console.log(username + "  " + password);
             UserFactory.register(username, password).then(function success(response){
                 $scope.user = response.data.user;
             }, handleError);
         }
 
         function handleError(response){
-            $scope.user_error += response.data;
+            $scope.user_error += "Error! Unauthorized request.";
             alert($scope.user_error);
         }
         // ======================================================================
+        $scope.setCommentError = null;
+        $scope.setrateError = null;
+
+        function setComment(commentInput){
+            if (!$scope.user){
+                $scope.setCommentError = "Please register before leaving comment.";
+            }
+            else{
+                CommentFactory.setComment(commentInput, $scope.detailItem.id).then(function success(response){
+                    $scope.detailItem.comments_total = response.data.comments_total;
+                    $scope.items.forEach(function(item) {
+                      if (item.id == $scope.detailItem.id){
+                          item.comments_total = response.data.comments_total;
+                      }
+                    });
+                }, handleError);
+            }
+        }
+
+
 
         $scope.addCategory = '';
         $scope.catId = '';
@@ -69,7 +89,6 @@
             $scope.detailItem='';
             $scope.items=[];
             if(id){
-                console.log('id = ' + id);
                 $scope.catId = id;
                 $scope.catName = name;
                 var request = {

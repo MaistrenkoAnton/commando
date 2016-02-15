@@ -79,9 +79,24 @@
             var token = AuthTokenFactory.getToken();
             if (token){
                 config.headers = config.headers || {};
-                config.headers.Authorization = 'Bearer ' + token;
+                config.headers.HTTP_AUTHORIZATION = token;
             }
             return config;
+        }
+    });
+
+    app.factory('CommentFactory', function CommentFactory($http, $q, AuthTokenFactory, djangoUrl){
+        'use strict';
+        return {
+            setComment: setComment
+        };
+
+        function setComment(commentInput, itemId){
+            var url = djangoUrl.reverse('catalogue:add_comment', [itemId]);
+            return $http.post(url, {text: commentInput})
+                .then(function success(response){
+                    return response;
+                })
         }
     });
 })();
