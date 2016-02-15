@@ -1,11 +1,20 @@
 from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import generics
-from .models import Item, Category
-from .serializers import (ItemListSerializer, CategoryListSerializer,
-                          CategoryAddSerializer, ItemDetailSerializer,
-                          ItemAddSerializer)
+from .serializers import (ItemListSerializer, CategoryAddSerializer, ItemAddSerializer)
 from rest_framework.views import APIView
+from .models import Item, Category
+from .jobs import ItemJob, CategoryListJob
+
+
+class ItemDetailView(APIView):
+    """
+    Get Detail Item by pk
+    pk -- particular item's id
+    """
+    def get(self, request, pk):
+        item = ItemJob().get(pk=str(pk))
+        return Response(item)
 
 
 class CategoryListView(APIView):
@@ -13,15 +22,9 @@ class CategoryListView(APIView):
     Category List
     pk -- filter by primary key
     """
-    serializer = CategoryListSerializer
-    model = Category
-
     def get(self, request, pk=None):
-        response_data = self.serializer(self._get_queryset(pk), many=True).data
-        return Response(response_data)
-
-    def _get_queryset(self, pk):
-        return self.model.objects.filter(parent=pk)
+        category_response = CategoryListJob().get(pk=str(pk))
+        return Response(category_response)
 
 
 class ItemListView(APIView):
@@ -38,15 +41,6 @@ class ItemListView(APIView):
 
     def _get_queryset(self, pk):
         return self.model.objects.filter(category=pk).order_by('price')
-
-
-class ItemDetailView(generics.RetrieveAPIView):
-    """
-    Get Detail Item by pk
-    pk -- particular item's id
-    """
-    queryset = Item.objects.all()
-    serializer_class = ItemDetailSerializer
 
 
 class ItemAddView(generics.CreateAPIView):
