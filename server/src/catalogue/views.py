@@ -31,7 +31,7 @@ class CategoryListView(APIView):
 
 class ItemListView(APIView):
     """
-    List Itemspip install -e git+https://github.com/jrief/django-angular#egg=django-angular
+    List Items
     pk -- filter by category
     """
     serializer = ItemListSerializer
