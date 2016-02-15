@@ -1,10 +1,12 @@
 from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import generics
-from .models import Item, Category
 from .serializers import (ItemListSerializer, CategoryAddSerializer, ItemAddSerializer)
 from rest_framework.views import APIView
+from .models import Item, Category
+from django.db.models.signals import post_delete, post_save
 from .jobs import ItemJob, CategoryListJob
+invalidate_signals = [post_delete, post_save]
 
 
 class ItemDetailView(APIView):
@@ -13,8 +15,8 @@ class ItemDetailView(APIView):
     pk -- particular item's id
     """
     def get(self, request, pk):
-        item1 = ItemJob().get(pk)
-        return Response(item1)
+        item = ItemJob().get(pk=str(pk))
+        return Response(item)
 
 
 class CategoryListView(APIView):
@@ -23,7 +25,7 @@ class CategoryListView(APIView):
     pk -- filter by primary key
     """
     def get(self, request, pk=None):
-        category_response = CategoryListJob().get(pk)
+        category_response = CategoryListJob().get(pk=str(pk))
         return Response(category_response)
 
 
