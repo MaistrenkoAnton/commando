@@ -1,6 +1,6 @@
 (function(){
     'use strict';
-    var app = angular.module('authentication', []);
+    var app = angular.module('factories', []);
 
     app.factory('UserFactory', function UserFactory($http, $q, AuthTokenFactory, djangoUrl){
         'use strict';
@@ -29,7 +29,6 @@
             return $http.post(url, {username: username, password: password})
                 .then(function success(response){
                     AuthTokenFactory.setToken(response.data.token);
-                    console.log(response);
                     return response;
                 })
         }
@@ -79,13 +78,13 @@
             var token = AuthTokenFactory.getToken();
             if (token){
                 config.headers = config.headers || {};
-                config.headers.HTTP_AUTHORIZATION = token;
+                config.headers.Authorization = 'JWT ' + token;
             }
             return config;
         }
     });
 
-    app.factory('CommentFactory', function CommentFactory($http, $q, AuthTokenFactory, djangoUrl){
+    app.factory('CommentFactory', function CommentFactory($http, AuthTokenFactory, djangoUrl){
         'use strict';
         return {
             setComment: setComment
@@ -99,4 +98,21 @@
                 })
         }
     });
+
+    app.factory('RateFactory', function RateFactory($http, AuthTokenFactory, djangoUrl){
+        'use strict';
+        return {
+            setRate: setRate
+        };
+
+        function setRate(rateInput, itemId){
+            var url = djangoUrl.reverse('catalogue:set_rate', [itemId]);
+            return $http.post(url, {rate: rateInput})
+                .then(function success(response){
+                    return response;
+                })
+        }
+    });
+
+
 })();

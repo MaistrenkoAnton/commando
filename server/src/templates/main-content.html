@@ -39,30 +39,29 @@
                         </div>
                     </div>
                     <div class="well"  ng-show="detailItem">
-                        <form class="form-inline">
+                        <form class="form-inline" ng-submit="setRate(rateInput)">
                             <div class="form-group">
                                 <label for="rate_1">1 - </label>
-                                <input type="radio" name="rates" class="form-control" id="rate_1">
+                                <input type="radio" name="rates" class="form-control" ng-model="rateInput" id="rate_1" value="1">
                             </div>
                             <div class="form-group">
-                                <label for="rate_2">2 - </label>
-                                <input type="radio"  name="rates" class="form-control" id="rate_2">
+                                <label for="rate_2">&nbsp;&nbsp;2 - </label>
+                                <input type="radio"  name="rates" class="form-control" ng-model="rateInput" id="rate_2" value="2">
                             </div>
                             <div class="form-group">
-                                <label for="rate_3">3 - </label>
-                                <input type="radio"  name="rates" class="form-control" id="rate_3">
+                                <label for="rate_3">&nbsp;&nbsp;3 - </label>
+                                <input type="radio"  name="rates" class="form-control" ng-model="rateInput" id="rate_3" value="3">
                             </div>
                             <div class="form-group">
-                                <label for="rate_4">4 - </label>
-                                <input type="radio"  name="rates" class="form-control" id="rate_4">
+                                <label for="rate_4">&nbsp;&nbsp;4 - </label>
+                                <input type="radio"  name="rates" class="form-control" ng-model="rateInput" id="rate_4" value="4">
                             </div>
                             <div class="form-group">
-                                <label for="rate_5">5 - </label>
-                                <input type="radio"  name="rates" class="form-control" id="rate_5">
+                                <label for="rate_5">&nbsp;&nbsp;5 - </label>
+                                <input type="radio"  name="rates" class="form-control" ng-model="rateInput" id="rate_5" value="5">
                             </div>
-                            <button type="submit" class="btn btn-info">Set Rate</button>
+                            <button type="submit" class="btn btn-info" >Set Rate</button>
                         </form>
-                        <p ng-show="setrateError" ng-bind="setrateError" class="errors"></p>
                     </div>
                     <div class="well" ng-show="detailItem">
                         <form ng-submit="setComment(commentInput)">
@@ -72,7 +71,6 @@
                             </div>
                             <button type="submit" class="btn btn-info">Leave Comment</button>
                         </form>
-                        <p ng-show="setCommentError" ng-bind="setCommentError" class="errors"></p>
                     </div>
 
                     <p ng-hide="detailItem">No selected Item</p>

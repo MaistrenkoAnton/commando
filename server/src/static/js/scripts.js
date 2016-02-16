@@ -1,12 +1,12 @@
 (function(){
     'use strict';
-    var app = angular.module('myApp', ['authentication', 'ng.django.urls'], function config($httpProvider){
+    var app = angular.module('myApp', ['factories', 'ng.django.urls'], function config($httpProvider){
         $httpProvider.interceptors.push('AuthInterceptor');
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     });
     app.constant('API_URL', 'http://127.0.0.1:8000');
-    app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, djangoUrl){
+    app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, djangoUrl){
         'use strict';
 
 
@@ -15,12 +15,11 @@
         $scope.login = login;
         $scope.logout = logout;
         $scope.register = register;
-        $scope.setComment = setComment;
-        $scope.user_error = 'Error! ';
+        $scope.serverError = '';
 
         // initialization
         UserFactory.verifyUser().then(function success(response){
-            $scope.user = response.data;
+            $scope.user = response.data.user;
         });
 
 
@@ -43,7 +42,7 @@
         function login(username, password){
             UserFactory.login(username, password).then(function success(response){
                 $scope.user = response.data.user;
-            }, handleError);
+            }, handleServerError);
         }
 
         function logout(){
@@ -54,32 +53,67 @@
         function register(username, password){
             UserFactory.register(username, password).then(function success(response){
                 $scope.user = response.data.user;
-            }, handleError);
+            }, handleServerError);
         }
 
-        function handleError(response){
-            $scope.user_error += "Error! Unauthorized request.";
-            alert($scope.user_error);
+        function handleServerError(response){
+            $scope.serverError = response.status + " " + response.statusText;
+            alert($scope.serverError);
         }
         // ======================================================================
+
+        /*
+        Comments and rates block
+         */
+        // ======================================================================
+        $scope.setComment = setComment;
+        $scope.setRate = setRate;
+
         $scope.setCommentError = null;
-        $scope.setrateError = null;
+        $scope.setRateError = null;
 
         function setComment(commentInput){
-            if (!$scope.user){
-                $scope.setCommentError = "Please register before leaving comment.";
+            if (!$scope.user.user.username){
+                $scope.setCommentError = "You need to sign in to leave a comment.";
+                alert($scope.setCommentError);
             }
             else{
+                console.log($scope.user);
                 CommentFactory.setComment(commentInput, $scope.detailItem.id).then(function success(response){
+                    $scope.commentInput = '';
                     $scope.detailItem.comments_total = response.data.comments_total;
                     $scope.items.forEach(function(item) {
                       if (item.id == $scope.detailItem.id){
-                          item.comments_total = response.data.comments_total;
+                          item.comments_total = $scope.detailItem.comments_total;
                       }
+
                     });
-                }, handleError);
+                }, handleServerError);
             }
         }
+
+        function setRate(rateInput){
+            if (!$scope.user){
+                $scope.setRateError = "You need to sign in to set rate.";
+                alert($scope.setRateError);
+            }
+            else{
+                RateFactory.setRate(rateInput, $scope.detailItem.id).then(function success(response){
+                    $scope.rateInput = null;
+                    $scope.detailItem.average_rate = parseFloat(response.data.average_rate).toFixed(1);
+                    $scope.items.forEach(function(item) {
+                      if (item.id == $scope.detailItem.id){
+                          item.average_rate = $scope.detailItem.average_rate;
+                      }
+                    });
+                }, function error(response){
+                    alert("You already rated this item.");
+                    //alert(response.status + " " + response.statusText);
+                });
+            }
+        }
+
+        // ======================================================================
 
 
 
@@ -99,6 +133,9 @@
                 //var rez = $http.get(API_URL + '/itemlist/' + $scope.catId);
                 rez.success(function(data){
                     $scope.items = data;
+                    $scope.items.forEach(function(item) {
+                        item.average_rate = parseFloat(item.average_rate).toFixed(1);
+                    });
                 });
                 rez.error(function(data){
                     alert(error + data);
@@ -130,6 +167,7 @@
 
         };
         $scope.itemDetail = function(id){// get detail info about item from server
+            $scope.commentInput = $scope.rateInput = null; // clear form values when switching items
             var request = {
                 method: 'GET',
                 url: djangoUrl.reverse('catalogue:item_detail', [id])
@@ -137,6 +175,7 @@
             var rez = $http(request);
             rez.success(function(data){
                 $scope.detailItem = data;
+                $scope.detailItem.average_rate = parseFloat($scope.detailItem.average_rate).toFixed(1);
             });
             rez.error(function(data){
                 alert(error + data);

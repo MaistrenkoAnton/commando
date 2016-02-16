@@ -1,8 +1,8 @@
 (function(){
     'use strict';
-var app = angular.module('authentication', []);
+    var app = angular.module('factories', []);
 
-    app.factory('UserFactory', function UserFactory($http, $q, API_URL, AuthTokenFactory){
+    app.factory('UserFactory', function UserFactory($http, $q, AuthTokenFactory, djangoUrl){
         'use strict';
         return {
             login: login,
@@ -12,7 +12,8 @@ var app = angular.module('authentication', []);
         };
 
         function login(username, password){
-            return $http.post(API_URL + '/auth/api-token-auth/', {username: username, password: password})
+            var url = djangoUrl.reverse('auth:login');
+            return $http.post(url, {username: username, password: password})
                 .then(function success(response){
                     AuthTokenFactory.setToken(response.data.token);
                     return response;
@@ -24,7 +25,8 @@ var app = angular.module('authentication', []);
         }
 
         function register(username, password){
-            return $http.post(API_URL + '/auth/api-registration/', {username: username, password: password})
+            var url = djangoUrl.reverse('auth:register');
+            return $http.post(url, {username: username, password: password})
                 .then(function success(response){
                     AuthTokenFactory.setToken(response.data.token);
                     return response;
@@ -34,7 +36,8 @@ var app = angular.module('authentication', []);
         function verifyUser(){
             var token = AuthTokenFactory.getToken();
             if (token){
-                return $http.post(API_URL + '/auth/api-token-verify/', {token: token});
+                var url = djangoUrl.reverse('auth:verify');
+                return $http.post(url, {token: token});
             }
             else{
                 return $q.reject({data: 'Client has no auth token'});
@@ -75,9 +78,41 @@ var app = angular.module('authentication', []);
             var token = AuthTokenFactory.getToken();
             if (token){
                 config.headers = config.headers || {};
-                config.headers.Authorization = 'Bearer ' + token;
+                config.headers.Authorization = 'JWT ' + token;
             }
             return config;
         }
     });
+
+    app.factory('CommentFactory', function CommentFactory($http, AuthTokenFactory, djangoUrl){
+        'use strict';
+        return {
+            setComment: setComment
+        };
+
+        function setComment(commentInput, itemId){
+            var url = djangoUrl.reverse('catalogue:add_comment', [itemId]);
+            return $http.post(url, {text: commentInput})
+                .then(function success(response){
+                    return response;
+                })
+        }
+    });
+
+    app.factory('RateFactory', function RateFactory($http, AuthTokenFactory, djangoUrl){
+        'use strict';
+        return {
+            setRate: setRate
+        };
+
+        function setRate(rateInput, itemId){
+            var url = djangoUrl.reverse('catalogue:set_rate', [itemId]);
+            return $http.post(url, {rate: rateInput})
+                .then(function success(response){
+                    return response;
+                })
+        }
+    });
+
+
 })();

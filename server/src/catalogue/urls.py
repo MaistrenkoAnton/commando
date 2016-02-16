@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^itemdetail/(?P<pk>\d+)/$', views.ItemDetailView.as_view(), name='item_detail'),
     url(r'^itemlist/(?P<pk>\d+)/$', views.ItemListView.as_view(), name='item_list'),
     url(r'^add-comment/(?P<pk>\d+)/$', views.CommentAddView.as_view(), name='add_comment'),
+    url(r'^set-rate/(?P<pk>\d+)/$', views.SetRateView.as_view(), name='set_rate'),
     url(r'^$', views.HomeView.as_view(), name='home'),
 ]

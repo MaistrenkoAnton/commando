@@ -1,9 +1,10 @@
 from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
-from .models import Item, Category, Comment
+from .models import Item, Category, Comment, RateSet
 from .serializers import (ItemListSerializer, CategoryListSerializer,
                           CategoryAddSerializer, ItemDetailSerializer,
                           ItemAddSerializer, CommentAddSerializer)
@@ -74,8 +75,6 @@ class HomeView(TemplateView):
     template_name = "main-content.html"
 
 
-from rest_framework_jwt.authentication import  JSONWebTokenAuthentication
-
 class CommentAddView(generics.CreateAPIView):
     """
     Add comment
@@ -83,7 +82,6 @@ class CommentAddView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Comment.objects.all()
     serializer_class = CommentAddSerializer
-
 
     def create(self, request, *args, **kwargs):
         data = {
@@ -94,11 +92,6 @@ class CommentAddView(generics.CreateAPIView):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        # print user
-        # new_comment = Comment.objects.create(text=request.data['text'], item=item, user=user)
-        # new_comment.save()
-        # item.comments_total += 1
-        # item.save()
         headers = self.get_success_headers(serializer.data)
         item = Item.objects.get(pk=kwargs['pk'])
         item.comments_total += 1
@@ -108,3 +101,29 @@ class CommentAddView(generics.CreateAPIView):
         }
         return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
 
+
+class SetRateView(generics.CreateAPIView):
+    """
+    Set rate
+    """
+    permission_classes = (IsAuthenticated,)
+    queryset = Item.objects.all()
+    serializer_class = ItemDetailSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Creating intermediate object RateSet to save info that defined user set rate for defined item.
+        Updating defined object to set 'average_rate' and 'rates_total' values
+        """
+        item = get_object_or_404(Item, pk=kwargs['pk'])
+        user = request.user
+        RateSet.objects.create(item=item, user=user)
+        item.rates_total += 1
+        item.average_rate = (item.average_rate * (item.rates_total - 1) + int(request.data['rate'])) / item.rates_total
+        item.save()
+        serializer = self.get_serializer(item)
+        headers = self.get_success_headers(serializer.data)
+        response_data = {
+            'average_rate': item.average_rate
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)

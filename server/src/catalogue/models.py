@@ -27,7 +27,8 @@ class Item(models.Model):
     image_url = models.ImageField(blank=True)
     description = models.TextField()
     category = models.ForeignKey(Category)
-    average_rate = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
+    average_rate = models.DecimalField(max_digits=6, decimal_places=5, default=0.0)
+    rates_total = models.IntegerField(default=0)
     comments_total = models.IntegerField(default=0)
 
     def get_absolute_url(self):
@@ -60,8 +61,17 @@ class RateSet(models.Model):
     Flag to show if rate for defined item by defined user is set
     """
     rate_is_set = models.BooleanField(default=True)
-    item = models.OneToOneField(Item, blank=False, null=False, on_delete=models.CASCADE)
-    user = models.OneToOneField(User, blank=False, null=False, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, blank=False, null=False, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        """
+        One user can set rate only one time for one item
+        """
+        not_unique = RateSet.objects.filter(item=self.item, user=self.user).exists()
+        if not_unique:
+            raise ValueError("Defined user can set only one rate for defined item")
+        super(RateSet, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u'{l}, {f}'.format(l="Rate No.", f=self.id)
