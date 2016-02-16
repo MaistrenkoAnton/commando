@@ -17,6 +17,26 @@ import datetime
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+import djcelery
+djcelery.setup_loader()
+
+CELERY_REDIS_HOST = 'localhost'
+CELERY_REDIS_PORT = 6379
+CELERY_REDIS_DB = 0
+REDIS_CONNECT_RETRY = True
+CELERY_SEND_EVENTS=True
+CELERY_RESULT_BACKEND='redis'
+CELERY_TASK_RESULT_EXPIRES = 10
+CELERYBEAT_SCHEDULER="djcelery.schedulers.DatabaseScheduler"
+
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+
+BROKER_URL = 'redis://localhost:6379/0'
+
+CELERY_ALWAYS_EAGER = True
+
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -44,8 +64,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'mptt',
     'feincms',
+    'cacheback',
+    'djcelery',
     'djangular',
-
     # my apps
     'catalogue',
     'authentication',
@@ -63,6 +84,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE_CLASSES = [
+
     'djangular.middleware.DjangularUrlMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -73,6 +95,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -151,6 +175,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
+
 # Django REST Framework settings
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -158,6 +183,12 @@ CORS_ORIGIN_ALLOW_ALL = True
 MEDIA_ROOT = os.path.join(BASE_DIR, 'files', 'media')
 MEDIA_URL = '/media/'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
+    },
+}
 
 
 # Django REST JWT config
