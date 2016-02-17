@@ -24,10 +24,13 @@ class CategoryListView(APIView):
     Category List
     pk -- filter by primary key
     """
+    serializer = CategoryListHaystackSerializer
+    model = Category
+
     def get(self, request, pk=None):
         if pk is None:
             pk = 0
-        return Response(CategoryListHaystackSerializer(SearchQuerySet().models(Category).filter(parent=pk), many=True).data)
+        return Response(self.serializer(SearchQuerySet().models(self.model).filter(parent=pk), many=True).data)
 
 
 class ItemListView(APIView):
@@ -43,7 +46,7 @@ class ItemListView(APIView):
         return Response(response_data)
 
     def _get_queryset(self, pk):
-        return SearchQuerySet().models(Item).filter(category=pk)
+        return SearchQuerySet().models(self.model).filter(category=pk)
 
 
 class ItemAddView(generics.CreateAPIView):
