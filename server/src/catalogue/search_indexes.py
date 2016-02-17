@@ -20,7 +20,7 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     def index_queryset(self, using=None):
         """Used when the entire index for model is updated."""
         for item in self.get_model().objects.all():
-            ItemJob().caccdhe_set(str(item.pk), 3600, ItemDetailSerializer(item).data)
+            ItemJob().cache_set(str(item.pk), 3600, ItemDetailSerializer(item).data)
         return self.get_model().objects.all()
 
 
