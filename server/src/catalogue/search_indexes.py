@@ -26,7 +26,7 @@ class CategoryIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     id = indexes.IntegerField(model_attr='pk')
     name = indexes.CharField(model_attr='name')
-    parent = indexes.IntegerField(model_attr='parent__id', default=None)
+    parent = indexes.IntegerField(model_attr='parent__id', default=0)
 
     def get_model(self):
         return Category

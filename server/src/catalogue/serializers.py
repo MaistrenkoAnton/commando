@@ -4,15 +4,6 @@ from drf_haystack.serializers import HaystackSerializer
 from .search_indexes import ItemIndex, CategoryIndex
 
 
-class CategoryListSerializer(serializers.ModelSerializer):
-    """
-    Category List serializer
-    """
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'parent']
-
-
 class CategoryListHaystackSerializer(HaystackSerializer):
     """
     Category List serializer
@@ -36,7 +27,7 @@ class ItemDetailSerializer(serializers.ModelSerializer):
     Detail Item
     Get by id
     """
-    category = CategoryListSerializer()
+    category = CategoryListHaystackSerializer()
 
     class Meta:
         model = Item
