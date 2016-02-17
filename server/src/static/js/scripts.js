@@ -20,7 +20,7 @@
         // initialization
         UserFactory.verifyUser().then(function success(response){
             $scope.user = response.data.user;
-        });
+        }, function error(){});
 
 
         $scope.signInForm = true;
