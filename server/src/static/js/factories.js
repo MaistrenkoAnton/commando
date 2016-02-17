@@ -8,6 +8,7 @@
             login: login,
             logout: logout,
             verifyUser: verifyUser,
+            refreshToken: refreshToken,
             register: register
         };
 
@@ -33,6 +34,18 @@
                 })
         }
 
+        function refreshToken(){
+            var token = AuthTokenFactory.getToken();
+            if (token){
+                var url = djangoUrl.reverse('auth:refresh');
+                return $http.post(url, {token: token});
+            }
+            else{
+                return $q.reject({data: 'No token in local storage'});
+            }
+        }
+
+
         function verifyUser(){
             var token = AuthTokenFactory.getToken();
             if (token){
@@ -40,7 +53,7 @@
                 return $http.post(url, {token: token});
             }
             else{
-                return $q.reject({data: 'Client has no auth token'});
+                return $q.reject({data: 'No token in local storage'});
             }
         }
     });

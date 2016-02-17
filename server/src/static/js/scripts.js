@@ -10,7 +10,7 @@
         'use strict';
 
 
-        // user aouthorization block
+        // user authorization block
         // ======================================================================
         $scope.login = login;
         $scope.logout = logout;
@@ -18,10 +18,10 @@
         $scope.serverError = '';
 
         // initialization
-        UserFactory.verifyUser().then(function success(response){
+        UserFactory.refreshToken().then(function success(response){
             $scope.user = response.data.user;
-        }, function error(){});
-
+            console.log($scope.user);
+        });
 
         $scope.signInForm = true;
         $scope.signUpForm = false;
@@ -36,7 +36,6 @@
             }else{
                 $scope.sign_link = 'Sign In';
             }
-
         }
 
         function login(username, password){
@@ -73,12 +72,11 @@
         $scope.setRateError = null;
 
         function setComment(commentInput){
-            if (!$scope.user.user.username){
+            if (!$scope.user){
                 $scope.setCommentError = "You need to sign in to leave a comment.";
                 alert($scope.setCommentError);
             }
             else{
-                console.log($scope.user);
                 CommentFactory.setComment(commentInput, $scope.detailItem.id).then(function success(response){
                     $scope.commentInput = '';
                     $scope.detailItem.comments_total = response.data.comments_total;
