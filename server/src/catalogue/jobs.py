@@ -8,7 +8,6 @@ class ItemJob(Job):
     Send and get detail info item cache
     """
     def fetch(self, pk):
-        print ('job')
         return ItemDetailSerializer(Item.objects.get(pk=pk)).data
 
 
