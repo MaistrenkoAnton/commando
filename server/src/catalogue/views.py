@@ -1,8 +1,9 @@
 from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import generics
-from .serializers import (CategoryAddSerializer, ItemListHaystackSerializer,
-                          ItemAddSerializer, CategoryListHaystackSerializer)
+from .serializers import (CategoryAddSerializer, ItemAddSerializer, )
+
+from .haystack_serializers import ItemListHaystackSerializer, CategoryListHaystackSerializer
 from rest_framework.views import APIView
 from .models import Item, Category
 from .jobs import ItemJob
@@ -28,9 +29,7 @@ class CategoryListView(APIView):
     model = Category
 
     def get(self, request, pk=None):
-        if pk is None:
-            pk = 0
-        return Response(self.serializer(SearchQuerySet().models(self.model).filter(parent=pk), many=True).data)
+        return Response(self.serializer(SearchQuerySet().models(self.model).filter(parent=str(pk)), many=True).data)
 
 
 class ItemListView(APIView):

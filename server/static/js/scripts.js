@@ -72,7 +72,6 @@ app.controller('myCtrl', function($scope, $http, UserFactory, API_URL){
                 url: API_URL + '/itemlist/' + $scope.catId
             };
             var rez = $http(request);
-            //var rez = $http.get(API_URL + '/itemlist/' + $scope.catId);
             rez.success(function(data){
                 $scope.items = data;
             });

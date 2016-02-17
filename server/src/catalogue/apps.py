@@ -6,3 +6,5 @@ class CatalogueConfig(AppConfig):
 
     def ready(self):
         from . import signals
+        from . import jobs
+        from . import serializers
