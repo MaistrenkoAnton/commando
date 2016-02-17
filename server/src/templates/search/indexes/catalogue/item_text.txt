@@ -1,0 +1,3 @@
+{{ object.price }}
+{{ object.name }}
+{{ object.category }}

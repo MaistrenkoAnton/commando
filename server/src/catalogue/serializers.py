@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Category, Item
+from drf_haystack.serializers import HaystackSerializer
+from .search_indexes import ItemIndex, CategoryIndex
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -11,6 +13,15 @@ class CategoryListSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'parent']
 
 
+class CategoryListHaystackSerializer(HaystackSerializer):
+    """
+    Category List serializer
+    """
+    class Meta:
+        index_classes = [CategoryIndex]
+        fields = ['id', 'name', 'parent']
+
+
 class CategoryAddSerializer(serializers.ModelSerializer):
     """
     Add category
@@ -18,16 +29,6 @@ class CategoryAddSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['name', 'parent']
-
-
-class ItemListSerializer(serializers.ModelSerializer):
-    """
-    List of Items
-    Get by category
-    """
-    class Meta:
-        model = Item
-        fields = ['id', 'name', 'price', 'image_url', 'category']
 
 
 class ItemDetailSerializer(serializers.ModelSerializer):
@@ -49,3 +50,17 @@ class ItemAddSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = ['name', 'price', 'category', 'description', 'image_url']
+
+
+class ItemListHaystackSerializer(HaystackSerializer):
+    """
+    List of Items
+    Get by category
+    """
+    class Meta:
+        index_classes = [ItemIndex]
+        fields = [
+            "name", "price", "category", "image_url", "description", "id"
+        ]
+
+

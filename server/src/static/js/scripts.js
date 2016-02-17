@@ -79,6 +79,7 @@
                 var rez = $http(request);
                 //var rez = $http.get(API_URL + '/itemlist/' + $scope.catId);
                 rez.success(function(data){
+                    console.log(data)
                     $scope.items = data;
                 });
                 rez.error(function(data){
@@ -103,6 +104,7 @@
             var rez = $http(request);
             rez.success(function(data){
                 $scope.categories = data;
+                console.log(data);
             });
             rez.error(function(data){
                 alert(error + data);

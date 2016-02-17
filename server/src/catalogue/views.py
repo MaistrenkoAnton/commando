@@ -1,10 +1,11 @@
 from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import generics
-from .serializers import (ItemListSerializer, CategoryAddSerializer, ItemAddSerializer)
+from .serializers import (CategoryAddSerializer, ItemListHaystackSerializer, ItemAddSerializer)
 from rest_framework.views import APIView
 from .models import Item, Category
 from .jobs import ItemJob, CategoryListJob
+from haystack.query import SearchQuerySet
 
 
 class ItemDetailView(APIView):
@@ -32,7 +33,7 @@ class ItemListView(APIView):
     List Items
     pk -- filter by category
     """
-    serializer = ItemListSerializer
+    serializer = ItemListHaystackSerializer
     model = Item
 
     def get(self, request, pk):
@@ -40,7 +41,7 @@ class ItemListView(APIView):
         return Response(response_data)
 
     def _get_queryset(self, pk):
-        return self.model.objects.filter(category=pk).order_by('price')
+        return SearchQuerySet().models(Item).filter(category=pk)
 
 
 class ItemAddView(generics.CreateAPIView):
