@@ -57,7 +57,7 @@ class CommentAddSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Comment
-        fields = ['text', 'item', 'user']
+        fields = ['text', 'item', 'user', 'author']
 
 
 class RateAddSerializer(serializers.ModelSerializer):

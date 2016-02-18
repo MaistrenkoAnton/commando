@@ -52,7 +52,8 @@ class Comment(models.Model):
     text = models.TextField(max_length=1000)
     timestamp = models.DateTimeField(auto_now_add=True)
     item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, blank=False, null=False, on_delete=models.DO_NOTHING)
+    author = models.CharField(max_length=100, null=False)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.DO_NOTHING)
 
     def save(self, *args, **kwargs):
         """
@@ -73,7 +74,7 @@ class Comment(models.Model):
         super(Comment, self).delete(*args, **kwargs)
 
     def __unicode__(self):
-        return u'{item} / {user}'.format(item=self.item, user=self.user)
+        return u'{item} / {author}'.format(item=self.item, author=self.author)
 
 
 class Rate(models.Model):

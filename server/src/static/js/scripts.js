@@ -76,7 +76,8 @@
                 alert($scope.setCommentError);
             }
             else{
-                CommentFactory.setComment(commentInput, $scope.detailItem.id, $scope.user.id).then(function success(response){
+                CommentFactory.setComment(commentInput, $scope.detailItem.id, $scope.user.id, $scope.user.username)
+                    .then(function success(response){
                     $scope.commentInput = '';
                     $scope.detailItem.comments_total = response.data.comments_total;
                     $scope.items.forEach(function(item) {

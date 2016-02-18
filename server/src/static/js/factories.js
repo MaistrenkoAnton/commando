@@ -106,11 +106,12 @@
             setComment: setComment
         };
 
-        function setComment(commentInput, itemId, userId){
+        function setComment(commentInput, itemId, userId, username){
             var url = djangoUrl.reverse('catalogue:add_comment');
             var data = {text: commentInput,
                         item: itemId,
-                        user: userId};
+                        user: userId,
+                        author: username};
             return $http.post(url, data)
                 .then(function success(response){
                     return response;

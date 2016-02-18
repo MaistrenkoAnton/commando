@@ -17,7 +17,7 @@ class ItemAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('text', 'item', 'user',)
+    list_display = ('text', 'item', 'author',)
     search_fields = ('item', 'user',)
 
 
