@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'djcelery',
     'djangular',
     # my apps
+    'stores',
     'catalogue',
     'authentication',
 ]
