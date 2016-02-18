@@ -29,7 +29,11 @@ class CategoryListView(APIView):
     model = Category
 
     def get(self, request, pk=None):
-        return Response(self.serializer(SearchQuerySet().models(self.model).filter(parent=str(pk)), many=True).data)
+        response_data = self.serializer(self._get_queryset(pk), many=True).data
+        return Response(response_data)
+
+    def _get_queryset(self, pk):
+        return SearchQuerySet().models(self.model).filter(parent=str(pk))
 
 
 class ItemListView(APIView):
