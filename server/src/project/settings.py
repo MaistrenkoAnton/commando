@@ -192,6 +192,7 @@ CACHES = {
     },
 }
 
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 HAYSTACK_CONNECTIONS = {
     'default': {

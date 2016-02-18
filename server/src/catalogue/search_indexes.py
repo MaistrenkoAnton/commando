@@ -1,11 +1,11 @@
 from haystack import indexes
 from .models import Item, Category
-from .jobs import ItemJob
-from .serializers import ItemDetailSerializer
 
 
 class ItemIndex(indexes.SearchIndex, indexes.Indexable):
-
+    """
+    Class for indexing List of Items
+    """
     text = indexes.CharField(document=True, use_template=True)
     id = indexes.IntegerField(model_attr='pk')
     price = indexes.CharField(model_attr='price')
@@ -18,14 +18,16 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
         return Item
 
     def index_queryset(self, using=None):
-        """Used when the entire index for model is updated."""
-        for item in self.get_model().objects.all():
-            ItemJob().cache_set(str(item.pk), 3600, ItemDetailSerializer(item).data)
+        """
+        Used when the entire index for model is updated.
+        """
         return self.get_model().objects.all()
 
 
 class CategoryIndex(indexes.SearchIndex, indexes.Indexable):
-
+    """
+    Class for indexing list of categories
+    """
     text = indexes.CharField(document=True, use_template=True)
     id = indexes.IntegerField(model_attr='pk')
     name = indexes.CharField(model_attr='name')
@@ -35,5 +37,7 @@ class CategoryIndex(indexes.SearchIndex, indexes.Indexable):
         return Category
 
     def index_queryset(self, using=None):
-        """Used when the entire index for model is updated."""
+        """
+        Used when the entire index for model is updated.
+        """
         return self.get_model().objects.all()
