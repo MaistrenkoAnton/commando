@@ -23,13 +23,15 @@ class Item(models.Model):
     Item of product
     """
     name = models.CharField(max_length=100)
-    price = models.IntegerField()
+    price = models.DecimalField(max_digits=20, decimal_places=2, blank=False, null=False)
     image_url = models.ImageField(blank=True)
     description = models.TextField()
     category = models.ForeignKey(Category)
     average_rate = models.DecimalField(max_digits=6, decimal_places=5, default=0.0)
     rates_total = models.IntegerField(default=0)
+    rates = models.ManyToManyField(User, related_name="rates", through="Rate")
     comments_total = models.IntegerField(default=0)
+    comments = models.ManyToManyField(User, related_name="comments", through="Comment")
 
     def get_absolute_url(self):
         return reverse("itemdetail", kwargs={"pk": self.id, })
@@ -52,26 +54,45 @@ class Comment(models.Model):
     item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
     user = models.ForeignKey(User, blank=False, null=False, on_delete=models.CASCADE)
 
+    def save(self, *args, **kwargs):
+        """
+        Increment 'comments_total' field of the Item object on every comment added so, that this field always shows
+        actual number of existing comments, related to this Item object
+        """
+        self.item.comments_total += 1
+        super(Comment, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """
+        Decrement 'comments_total' field of the Item object on every comment added so, that this field always shows
+        actual number of existing comments, related to this Item object
+        """
+        self.item.comments_total -= 1
+        super(Comment, self).delete(*args, **kwargs)
+
     def __unicode__(self):
-        return u'{l}, {f}'.format(l="Comment No.", f=self.id)
+        return u'{item} / {user}'.format(item=self.item, user=self.user)
 
 
-class RateSet(models.Model):
+class Rate(models.Model):
     """
     Flag to show if rate for defined item by defined user is set
     """
-    rate_is_set = models.BooleanField(default=True)
+    rate = models.IntegerField(blank=False, null=False)
     item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
     user = models.ForeignKey(User, blank=False, null=False, on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = (("item", "user"),)
+
     def save(self, *args, **kwargs):
         """
-        One user can set rate only one time for one item
+        Increment 'rates_total' field and set new value to 'average_rate' field of the Item object every time new rate
+        is set
         """
-        not_unique = RateSet.objects.filter(item=self.item, user=self.user).exists()
-        if not_unique:
-            raise ValueError("Defined user can set only one rate for defined item")
-        super(RateSet, self).save(*args, **kwargs)
+        self.item.rates_total += 1
+        self.item.average_rate += (self.item.average_rate + self.rate) / self.item.rates_total
+        super(Rate, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return u'{l}, {f}'.format(l="Rate No.", f=self.id)
+        return u'{item} / {user}'.format(item=self.item, user=self.user)

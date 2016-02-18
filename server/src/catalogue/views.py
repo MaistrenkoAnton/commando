@@ -7,7 +7,7 @@ from rest_framework import generics
 from .serializers import (ItemListSerializer, CategoryAddSerializer, ItemDetailSerializer,
                           ItemAddSerializer, CommentAddSerializer)
 from rest_framework.views import APIView
-from .models import Item, Category, Comment, RateSet
+from .models import Item, Category, Comment
 from .jobs import ItemJob, CategoryListJob
 
 
@@ -112,7 +112,7 @@ class SetRateView(generics.CreateAPIView):
         """
         item = get_object_or_404(Item, pk=kwargs['pk'])
         user = request.user
-        RateSet.objects.create(item=item, user=user)
+        # Rate.objects.create(item=item, user=user)
         item.rates_total += 1
         item.average_rate = (item.average_rate * (item.rates_total - 1) + int(request.data['rate'])) / item.rates_total
         item.save()
