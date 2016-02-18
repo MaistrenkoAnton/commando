@@ -21,6 +21,7 @@ from django.conf import settings
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^auth/', include('authentication.urls', namespace="auth")),
+    url(r'^stores/', include('stores.urls', namespace="stores")),
     url(r'^docs/', include('rest_framework_swagger.urls')),
     url(r'^', include('catalogue.urls', namespace="catalogue")),
 ]

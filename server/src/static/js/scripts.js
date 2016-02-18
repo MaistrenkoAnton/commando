@@ -114,7 +114,6 @@
         // ======================================================================
 
 
-
         $scope.addCategory = '';
         $scope.catId = '';
         $scope.categoryList = function(id, name){//get list of categories and items
