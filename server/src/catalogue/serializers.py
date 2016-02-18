@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Item, Comment
+from .models import Category, Item, Comment, Rate
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -52,7 +52,18 @@ class ItemAddSerializer(serializers.ModelSerializer):
 
 
 class CommentAddSerializer(serializers.ModelSerializer):
+    """
+    Add comment
+    """
     class Meta:
         model = Comment
         fields = ['text', 'item', 'user']
 
+
+class RateAddSerializer(serializers.ModelSerializer):
+    """
+    Add rate
+    """
+    class Meta:
+        model = Rate
+        fields = ['rate', 'item', 'user']

@@ -10,7 +10,7 @@
         'use strict';
 
 
-        // user aouthorization block
+        // user authorization block
         // ======================================================================
         $scope.login = login;
         $scope.logout = logout;
@@ -21,7 +21,6 @@
         UserFactory.verifyUser().then(function success(response){
             $scope.user = response.data.user;
         });
-
 
         $scope.signInForm = true;
         $scope.signUpForm = false;
@@ -36,7 +35,6 @@
             }else{
                 $scope.sign_link = 'Sign In';
             }
-
         }
 
         function login(username, password){
@@ -73,13 +71,12 @@
         $scope.setRateError = null;
 
         function setComment(commentInput){
-            if (!$scope.user.user.username){
+            if (!$scope.user){
                 $scope.setCommentError = "You need to sign in to leave a comment.";
                 alert($scope.setCommentError);
             }
             else{
-                console.log($scope.user);
-                CommentFactory.setComment(commentInput, $scope.detailItem.id).then(function success(response){
+                CommentFactory.setComment(commentInput, $scope.detailItem.id, $scope.user.id).then(function success(response){
                     $scope.commentInput = '';
                     $scope.detailItem.comments_total = response.data.comments_total;
                     $scope.items.forEach(function(item) {
@@ -98,7 +95,7 @@
                 alert($scope.setRateError);
             }
             else{
-                RateFactory.setRate(rateInput, $scope.detailItem.id).then(function success(response){
+                RateFactory.setRate(rateInput, $scope.detailItem.id, $scope.user.id).then(function success(response){
                     $scope.rateInput = null;
                     $scope.detailItem.average_rate = parseFloat(response.data.average_rate).toFixed(1);
                     $scope.items.forEach(function(item) {
@@ -107,8 +104,8 @@
                       }
                     });
                 }, function error(response){
-                    alert("You already rated this item.");
-                    //alert(response.status + " " + response.statusText);
+                    var error = response.data.non_field_errors;
+                    alert(error);
                 });
             }
         }

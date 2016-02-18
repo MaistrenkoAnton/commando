@@ -1,6 +1,6 @@
 (function(){
     'use strict';
-    var app = angular.module('factories', []);
+    var app = angular.module('factories', ['angular-jwt']);
 
     app.factory('UserFactory', function UserFactory($http, $q, AuthTokenFactory, djangoUrl){
         'use strict';
@@ -8,6 +8,7 @@
             login: login,
             logout: logout,
             verifyUser: verifyUser,
+            refreshToken: refreshToken,
             register: register
         };
 
@@ -33,6 +34,18 @@
                 })
         }
 
+        function refreshToken(){
+            var token = AuthTokenFactory.getToken();
+            if (token){
+                var url = djangoUrl.reverse('auth:refresh');
+                return $http.post(url, {token: token});
+            }
+            else{
+                return $q.reject({data: 'No token in local storage'});
+            }
+        }
+
+
         function verifyUser(){
             var token = AuthTokenFactory.getToken();
             if (token){
@@ -40,12 +53,12 @@
                 return $http.post(url, {token: token});
             }
             else{
-                return $q.reject({data: 'Client has no auth token'});
+                return $q.reject({data: 'No token in local storage'});
             }
         }
     });
 
-    app.factory('AuthTokenFactory', function AuthTokenFactory($window){
+    app.factory('AuthTokenFactory', function AuthTokenFactory($window, jwtHelper){
         'use strict';
         var store = $window.localStorage;
         var key = 'auth-token';
@@ -55,6 +68,9 @@
         };
 
         function getToken(){
+            if (store.getItem(key) && jwtHelper.isTokenExpired(store.getItem(key))){
+                store.removeItem(key);
+            }
             return store.getItem(key);
         }
 
@@ -90,9 +106,12 @@
             setComment: setComment
         };
 
-        function setComment(commentInput, itemId){
-            var url = djangoUrl.reverse('catalogue:add_comment', [itemId]);
-            return $http.post(url, {text: commentInput})
+        function setComment(commentInput, itemId, userId){
+            var url = djangoUrl.reverse('catalogue:add_comment');
+            var data = {text: commentInput,
+                        item: itemId,
+                        user: userId};
+            return $http.post(url, data)
                 .then(function success(response){
                     return response;
                 })
@@ -105,14 +124,16 @@
             setRate: setRate
         };
 
-        function setRate(rateInput, itemId){
-            var url = djangoUrl.reverse('catalogue:set_rate', [itemId]);
-            return $http.post(url, {rate: rateInput})
+        function setRate(rateInput, itemId, userId){
+            var url = djangoUrl.reverse('catalogue:set_rate');
+            var data = {rate: rateInput,
+                        item: itemId,
+                        user: userId};
+            return $http.post(url, data)
                 .then(function success(response){
                     return response;
                 })
         }
     });
-
 
 })();

@@ -52,7 +52,7 @@ class Comment(models.Model):
     text = models.TextField(max_length=1000)
     timestamp = models.DateTimeField(auto_now_add=True)
     item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, blank=False, null=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, blank=False, null=False, on_delete=models.DO_NOTHING)
 
     def save(self, *args, **kwargs):
         """
@@ -60,6 +60,7 @@ class Comment(models.Model):
         actual number of existing comments, related to this Item object
         """
         self.item.comments_total += 1
+        self.item.save()
         super(Comment, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -68,6 +69,7 @@ class Comment(models.Model):
         actual number of existing comments, related to this Item object
         """
         self.item.comments_total -= 1
+        self.item.save()
         super(Comment, self).delete(*args, **kwargs)
 
     def __unicode__(self):
@@ -92,6 +94,7 @@ class Rate(models.Model):
         """
         self.item.rates_total += 1
         self.item.average_rate += (self.item.average_rate + self.rate) / self.item.rates_total
+        self.item.save()
         super(Rate, self).save(*args, **kwargs)
 
     def __unicode__(self):

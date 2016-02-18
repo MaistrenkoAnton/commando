@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from .serializers import (ItemListSerializer, CategoryAddSerializer, ItemDetailSerializer,
-                          ItemAddSerializer, CommentAddSerializer)
+                          ItemAddSerializer, CommentAddSerializer, RateAddSerializer)
 from rest_framework.views import APIView
-from .models import Item, Category, Comment
+from .models import Item, Category, Comment, Rate
 from .jobs import ItemJob, CategoryListJob
 
 
@@ -79,20 +79,15 @@ class CommentAddView(generics.CreateAPIView):
     serializer_class = CommentAddSerializer
 
     def create(self, request, *args, **kwargs):
-        data = {
-            'text': request.data['text'],
-            'item': kwargs['pk'],
-            'user': request.user.pk,
-        }
-        serializer = self.get_serializer(data=data)
+        """
+        Override base method to return value of 'comments_total' field of the related item_object
+        """
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        item = Item.objects.get(pk=kwargs['pk'])
-        item.comments_total += 1
-        item.save()
         response_data = {
-            'comments_total': item.comments_total,
+            "comments_total": Item.objects.get(pk=serializer.data['item']).comments_total
         }
         return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -102,23 +97,18 @@ class SetRateView(generics.CreateAPIView):
     Set rate
     """
     permission_classes = (IsAuthenticated,)
-    queryset = Item.objects.all()
-    serializer_class = ItemDetailSerializer
+    queryset = Rate.objects.all()
+    serializer_class = RateAddSerializer
 
     def create(self, request, *args, **kwargs):
         """
-        Creating intermediate object RateSet to save info that defined user set rate for defined item.
-        Updating defined object to set 'average_rate' and 'rates_total' values
+        Override base method to return value of 'average_rate' field of the related item_object
         """
-        item = get_object_or_404(Item, pk=kwargs['pk'])
-        user = request.user
-        # Rate.objects.create(item=item, user=user)
-        item.rates_total += 1
-        item.average_rate = (item.average_rate * (item.rates_total - 1) + int(request.data['rate'])) / item.rates_total
-        item.save()
-        serializer = self.get_serializer(item)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         response_data = {
-            'average_rate': item.average_rate
+            "average_rate": Item.objects.get(pk=serializer.data['item']).average_rate
         }
         return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
