@@ -20,16 +20,6 @@ class CategoryAddSerializer(serializers.ModelSerializer):
         fields = ['name', 'parent']
 
 
-class ItemListSerializer(serializers.ModelSerializer):
-    """
-    List of Items
-    Get by category
-    """
-    class Meta:
-        model = Item
-        fields = ['id', 'name', 'price', 'image_url', 'category']
-
-
 class ItemDetailSerializer(serializers.ModelSerializer):
     """
     Detail Item

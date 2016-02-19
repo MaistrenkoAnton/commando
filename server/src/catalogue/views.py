@@ -1,10 +1,13 @@
 from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import generics
-from .serializers import (ItemListSerializer, CategoryAddSerializer, ItemAddSerializer)
+from .serializers import CategoryAddSerializer, ItemAddSerializer
+
+from .haystack_serializers import ItemListHaystackSerializer, CategoryListHaystackSerializer
 from rest_framework.views import APIView
 from .models import Item, Category
-from .jobs import ItemJob, CategoryListJob
+from .jobs import ItemJob
+from haystack.query import SearchQuerySet
 
 
 class ItemDetailView(APIView):
@@ -22,9 +25,16 @@ class CategoryListView(APIView):
     Category List
     pk -- filter by primary key
     """
+    serializer = CategoryListHaystackSerializer
+    model = Category
+
     def get(self, request, pk=None):
-        category_response = CategoryListJob().get(pk=str(pk))
-        return Response(category_response)
+        response_data = self.serializer(self._get_queryset(pk), many=True).data
+        facet = SearchQuerySet().models(self.model).facet('parent').facet_counts()
+        return Response({'data': response_data, 'facet': facet})
+
+    def _get_queryset(self, pk):
+        return SearchQuerySet().models(self.model).filter(parent=str(pk))
 
 
 class ItemListView(APIView):
@@ -32,7 +42,7 @@ class ItemListView(APIView):
     List Items
     pk -- filter by category
     """
-    serializer = ItemListSerializer
+    serializer = ItemListHaystackSerializer
     model = Item
 
     def get(self, request, pk):
@@ -40,7 +50,7 @@ class ItemListView(APIView):
         return Response(response_data)
 
     def _get_queryset(self, pk):
-        return self.model.objects.filter(category=pk).order_by('price')
+        return SearchQuerySet().models(self.model).filter(category=pk)
 
 
 class ItemAddView(generics.CreateAPIView):
@@ -64,3 +74,5 @@ class HomeView(TemplateView):
     Home view to launch home page
     """
     template_name = "main-content.html"
+
+
