@@ -41,8 +41,14 @@ class ItemAddSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Item
-        fields = ['name', 'price', 'category', 'description', 'image_url', 'comments_total', 'average_rate',
+        fields = ['id', 'name', 'price', 'category', 'description', 'image_url', 'comments_total', 'average_rate',
                   'store', 'quantity', 'running_out_level', 'running_out']
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'average_rate': {'read_only': True},
+            'comments_total': {'read_only': True},
+            'running_out': {'read_only': True},
+        }
 
 
 class CommentAddSerializer(serializers.ModelSerializer):

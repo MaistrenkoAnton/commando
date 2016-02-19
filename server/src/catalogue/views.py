@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
-from .serializers import (CategoryAddSerializer, ItemAddSerializer,
+from .serializers import (CategoryAddSerializer, ItemAddSerializer, ItemDetailSerializer,
                           CommentAddSerializer, RateAddSerializer)
 from .models import Item, Category, Comment, Rate
 from .haystack_serializers import ItemListHaystackSerializer, CategoryListHaystackSerializer
@@ -61,6 +61,21 @@ class ItemAddView(generics.CreateAPIView):
     """
     queryset = Item.objects.all()
     serializer_class = ItemAddSerializer
+
+
+class ItemUpdateView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Update Item
+    """
+    queryset = Item.objects.all()
+    serializer_class = ItemDetailSerializer
+
+
+# class ItemDeleteView(generics.DestroyAPIView):
+#     """
+#     Update Item
+#     """
+#     queryset = Item.objects.all()
 
 
 class CategoryAddView(generics.CreateAPIView):
