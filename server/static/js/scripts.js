@@ -3,7 +3,6 @@
 var app = angular.module('myApp', ['authentication'], function config($httpProvider){
         $httpProvider.interceptors.push('AuthInterceptor');
     });
-    app.constant('API_URL', 'http://127.0.0.1:8000');
 app.controller('myCtrl', function($scope, $http, UserFactory, API_URL){
     'use strict';
 

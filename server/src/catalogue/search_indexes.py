@@ -9,7 +9,7 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     id = indexes.IntegerField(model_attr='pk')
     price = indexes.CharField(model_attr='price')
-    name = indexes.CharField(model_attr='name', faceted=True)
+    name = indexes.CharField(model_attr='name')
     image_url = indexes.CharField(model_attr='image_url')
     category = indexes.IntegerField(model_attr='category__id')
     description = indexes.CharField(model_attr='description')
@@ -30,8 +30,8 @@ class CategoryIndex(indexes.SearchIndex, indexes.Indexable):
     """
     text = indexes.CharField(document=True, use_template=True)
     id = indexes.IntegerField(model_attr='pk')
-    name = indexes.CharField(model_attr='name')
-    parent = indexes.CharField(model_attr='parent__id', default='None')
+    name = indexes.CharField(model_attr='name', faceted=True)
+    parent = indexes.CharField(model_attr='parent__id', default='None', faceted=True)
 
     def get_model(self):
         return Category

@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import generics
-from .serializers import (CategoryAddSerializer, ItemAddSerializer, )
+from .serializers import CategoryAddSerializer, ItemAddSerializer
 
 from .haystack_serializers import ItemListHaystackSerializer, CategoryListHaystackSerializer
 from rest_framework.views import APIView
@@ -30,7 +30,8 @@ class CategoryListView(APIView):
 
     def get(self, request, pk=None):
         response_data = self.serializer(self._get_queryset(pk), many=True).data
-        return Response(response_data)
+        facet = SearchQuerySet().models(self.model).facet('parent').facet_counts()
+        return Response({'data': response_data, 'facet': facet})
 
     def _get_queryset(self, pk):
         return SearchQuerySet().models(self.model).filter(parent=str(pk))
@@ -73,3 +74,5 @@ class HomeView(TemplateView):
     Home view to launch home page
     """
     template_name = "main-content.html"
+
+

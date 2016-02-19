@@ -68,8 +68,8 @@
         $scope.categoryList = function(id, name){//get list of categories and items
             $scope.detailItem='';
             $scope.items=[];
+            $scope.counterSet = [];
             if(id){
-                console.log('id = ' + id);
                 $scope.catId = id;
                 $scope.catName = name;
                 var request = {
@@ -77,9 +77,7 @@
                     url: djangoUrl.reverse('catalogue:item_list', [$scope.catId])
                 };
                 var rez = $http(request);
-                //var rez = $http.get(API_URL + '/itemlist/' + $scope.catId);
                 rez.success(function(data){
-                    console.log(data)
                     $scope.items = data;
                 });
                 rez.error(function(data){
@@ -103,8 +101,16 @@
             }
             var rez = $http(request);
             rez.success(function(data){
-                $scope.categories = data;
-                console.log(data);
+                $scope.categories = data.data;
+                data.facet.fields.parent.forEach(
+                    function(item)
+                    {
+                        $scope.counter = { id: item[0], val: item[1] };
+                        $scope.counterSet.push($scope.counter);
+                    }
+
+                );
+
             });
             rez.error(function(data){
                 alert(error + data);
@@ -125,6 +131,12 @@
                 alert(error + data);
             });
         };
+
         $scope.categoryList();
+
+        //$scope.countSet = function(countName, countVal){
+        //    $scope.counter = { id: countName, val: countVal };
+        //    $scope.counterSet.push($scope.counter);
+        //};
     });
 })();
