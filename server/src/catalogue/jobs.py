@@ -1,5 +1,5 @@
-from .serializers import ItemDetailSerializer, CategoryListSerializer
-from .models import Item, Category
+from .serializers import ItemDetailSerializer
+from .models import Item
 from cacheback.base import Job
 
 
@@ -9,13 +9,5 @@ class ItemJob(Job):
     """
     def fetch(self, pk):
         return ItemDetailSerializer(Item.objects.get(pk=pk)).data
-
-
-class CategoryListJob(Job):
-    """
-    Send and get list categories into cache
-    """
-    def fetch(self, pk=None):
-        return CategoryListSerializer(Category.objects.filter(parent=pk), many=True).data
 
 

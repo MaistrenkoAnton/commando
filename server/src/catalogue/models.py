@@ -23,7 +23,7 @@ class Item(models.Model):
     Item of product
     """
     name = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=20, decimal_places=2, blank=False, null=False)
+    price = models.FloatField(blank=False, null=False)
     image_url = models.ImageField(blank=True)
     description = models.TextField()
     category = models.ForeignKey(Category)

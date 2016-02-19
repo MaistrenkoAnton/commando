@@ -1,6 +1,7 @@
 {% extends "index.html" %}
 {% load djangular_tags %}
 {% block content %}
+
     <div class="container">
         <div class="starter-template">
             <h1 class="text-center">Category <strong ng-bind="catName"></strong></h1>
@@ -8,7 +9,12 @@
                 <div class="col-md-4">
                     <h3>Categories: </h3>
                     <div class="list-group" ng-repeat = "category in categories">
-                        <a href="#" class="list-group-item" ng-click="categoryList(category.id, category.name)" ng-bind="category.name"></a>
+                        <a href="#"  class="list-group-item" ng-click="categoryList(category.id, category.name)">{% angularjs %}{{ category.name }}{% endangularjs %}
+
+                            <span ng-repeat="counter in counterSet">
+                                <span ng-if="category.id==counter.id"><strong>({% angularjs %}{{ counter.val }}{% endangularjs %})</strong></span>
+                            </span>
+                        </a>
                     </div>
                     <p ng-hide="categories.length">List of Categories is empty</p>
                     <button type="button" class="btn btn-info" ng-click="categoryList()">To Main</button>

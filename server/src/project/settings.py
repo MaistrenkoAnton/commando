@@ -67,6 +67,8 @@ INSTALLED_APPS = [
     'cacheback',
     'djcelery',
     'djangular',
+    'haystack',
+    'elasticsearch',
     # my apps
     'catalogue',
     'authentication',
@@ -190,6 +192,15 @@ CACHES = {
     },
 }
 
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
 
 # Django REST JWT config
 # ----------------------------------------------------------------------------------------------------------------------

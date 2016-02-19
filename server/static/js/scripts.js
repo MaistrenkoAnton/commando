@@ -5,9 +5,14 @@
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     });
+<<<<<<< HEAD
     app.constant('API_URL', 'http://127.0.0.1:8000');
     app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, djangoUrl){
         'use strict';
+=======
+app.controller('myCtrl', function($scope, $http, UserFactory, API_URL){
+    'use strict';
+>>>>>>> master
 
 
         // user authorization block
