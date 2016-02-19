@@ -2,39 +2,20 @@ from django.db import models
 import mptt
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from stores.models import Store
 
 
 class Category(models.Model):
     """
     Category of products
     """
+    class Meta:
+        db_table = "categories"
+        verbose_name = "category"
+        verbose_name_plural = "categories"
+
     name = models.CharField(max_length=100)
     parent = models.ForeignKey('self', blank=True, null=True, related_name='child')
-
-    def __str__(self):
-        return self.name
-
-    def __unicode__(self):
-        return self.name
-
-
-class Item(models.Model):
-    """
-    Item of product
-    """
-    name = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=20, decimal_places=2, blank=False, null=False)
-    image_url = models.ImageField(blank=True)
-    description = models.TextField()
-    category = models.ForeignKey(Category)
-    average_rate = models.DecimalField(max_digits=6, decimal_places=5, default=0.0)
-    rates_total = models.IntegerField(default=0)
-    rates = models.ManyToManyField(User, related_name="rates", through="Rate")
-    comments_total = models.IntegerField(default=0)
-    comments = models.ManyToManyField(User, related_name="comments", through="Comment")
-
-    def get_absolute_url(self):
-        return reverse("itemdetail", kwargs={"pk": self.id, })
 
     def __str__(self):
         return self.name
@@ -45,10 +26,56 @@ class Item(models.Model):
 mptt.register(Category, )
 
 
+class Item(models.Model):
+    """
+    Item of product
+    """
+    class Meta:
+        db_table = "items"
+        verbose_name = "item"
+        verbose_name_plural = "items"
+        ordering = ["price"]
+
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=20, decimal_places=2, blank=False, null=False)
+    image_url = models.ImageField(blank=True)
+    description = models.TextField()
+    category = models.ForeignKey(Category)
+    average_rate = models.DecimalField(max_digits=6, decimal_places=5, default=0.0)
+    rates_total = models.IntegerField(default=0)
+    rates = models.ManyToManyField(User, related_name="rates", through="Rate")
+    comments_total = models.IntegerField(default=0)
+    comments = models.ManyToManyField(User, related_name="comments", through="Comment")
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0, blank=True)
+    running_out_level = models.IntegerField(default=10, blank=True)
+
+    @property
+    def running_out(self):
+        """
+        Returns True if quantity of items in stock is less or equal to running out level set
+        """
+        return self.quantity <= self.running_out_level
+
+    def get_absolute_url(self):
+        return reverse("itemdetail", kwargs={"pk": self.id, })
+
+    def __str__(self):
+        return self.name
+
+    def __unicode__(self):
+        return self.name
+
+
 class Comment(models.Model):
     """
     Comments for items
     """
+    class Meta:
+        db_table = "comment"
+        verbose_name = "comment"
+        verbose_name_plural = "comments"
+
     text = models.TextField(max_length=1000)
     timestamp = models.DateTimeField(auto_now_add=True)
     item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
