@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'haystack',
     'elasticsearch',
     # my apps
+    'stores',
     'catalogue',
     'authentication',
 ]
