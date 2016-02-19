@@ -13,6 +13,8 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     image_url = indexes.CharField(model_attr='image_url')
     category = indexes.IntegerField(model_attr='category__id')
     description = indexes.CharField(model_attr='description')
+    average_rate = indexes.DecimalField(model_attr='average_rate')
+    comments_total = indexes.IntegerField(model_attr='comments_total')
 
     def get_model(self):
         return Item

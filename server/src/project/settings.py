@@ -79,8 +79,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
 }
@@ -243,7 +243,7 @@ JWT_AUTH = {
 
     # This is an instance of Python's datetime.timedelta. This will be added to datetime.
     # utcnow() to set the expiration time
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=300),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=60*60),
 
     # his is a string that will be checked against the aud field of the token, if present.
     'JWT_AUDIENCE': None,

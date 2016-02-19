@@ -1,27 +1,26 @@
 (function(){
     'use strict';
-    var app = angular.module('myApp', ['authentication', 'ng.django.urls'], function config($httpProvider){
+    var app = angular.module('myApp', ['factories', 'ng.django.urls'], function config($httpProvider){
         $httpProvider.interceptors.push('AuthInterceptor');
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     });
     app.constant('API_URL', 'http://127.0.0.1:8000');
-    app.controller('myCtrl', function($scope, $http, UserFactory, djangoUrl){
+    app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, djangoUrl){
         'use strict';
 
 
-        // user aouthorization block
+        // user authorization block
         // ======================================================================
         $scope.login = login;
         $scope.logout = logout;
         $scope.register = register;
-        $scope.user_error = 'Error! ';
+        $scope.serverError = '';
 
         // initialization
         UserFactory.verifyUser().then(function success(response){
-            $scope.user = response.data;
+            $scope.user = response.data.user;
         });
-
 
         $scope.signInForm = true;
         $scope.signUpForm = false;
@@ -36,13 +35,12 @@
             }else{
                 $scope.sign_link = 'Sign In';
             }
-
         }
 
         function login(username, password){
             UserFactory.login(username, password).then(function success(response){
                 $scope.user = response.data.user;
-            }, handleError);
+            }, handleServerError);
         }
 
         function logout(){
@@ -51,17 +49,71 @@
         }
 
         function register(username, password){
-            console.log(username + "  " + password);
             UserFactory.register(username, password).then(function success(response){
                 $scope.user = response.data.user;
-            }, handleError);
+            }, handleServerError);
         }
 
-        function handleError(response){
-            $scope.user_error += response.data;
-            alert($scope.user_error);
+        function handleServerError(response){
+            $scope.serverError = response.status + " " + response.statusText;
+            alert($scope.serverError);
         }
         // ======================================================================
+
+        /*
+        Comments and rates block
+         */
+        // ======================================================================
+        $scope.setComment = setComment;
+        $scope.setRate = setRate;
+
+        $scope.setCommentError = null;
+        $scope.setRateError = null;
+
+        function setComment(commentInput){
+            if (!$scope.user){
+                $scope.setCommentError = "You need to sign in to leave a comment.";
+                alert($scope.setCommentError);
+            }
+            else{
+                CommentFactory.setComment(commentInput, $scope.detailItem.id, $scope.user.id, $scope.user.username)
+                    .then(function success(response){
+                    $scope.commentInput = '';
+                    $scope.detailItem.comments_total = response.data.comments_total;
+                    $scope.items.forEach(function(item) {
+                      if (item.id == $scope.detailItem.id){
+                          item.comments_total = $scope.detailItem.comments_total;
+                      }
+
+                    });
+                }, handleServerError);
+            }
+        }
+
+        function setRate(rateInput){
+            if (!$scope.user){
+                $scope.setRateError = "You need to sign in to set rate.";
+                alert($scope.setRateError);
+            }
+            else{
+                RateFactory.setRate(rateInput, $scope.detailItem.id, $scope.user.id).then(function success(response){
+                    $scope.rateInput = null;
+                    $scope.detailItem.average_rate = parseFloat(response.data.average_rate).toFixed(1);
+                    $scope.items.forEach(function(item) {
+                      if (item.id == $scope.detailItem.id){
+                          item.average_rate = $scope.detailItem.average_rate;
+                      }
+                    });
+                }, function error(response){
+                    var error = response.data.non_field_errors;
+                    alert(error);
+                });
+            }
+        }
+
+        // ======================================================================
+
+
 
         $scope.addCategory = '';
         $scope.catId = '';
@@ -79,6 +131,10 @@
                 var rez = $http(request);
                 rez.success(function(data){
                     $scope.items = data;
+                    console.log(data);
+                    $scope.items.forEach(function(item) {
+                        item.average_rate = parseFloat(item.average_rate).toFixed(1);
+                    });
                 });
                 rez.error(function(data){
                     alert(error + data);
@@ -119,6 +175,7 @@
 
         };
         $scope.itemDetail = function(id){// get detail info about item from server
+            $scope.commentInput = $scope.rateInput = null; // clear form values when switching items
             var request = {
                 method: 'GET',
                 url: djangoUrl.reverse('catalogue:item_detail', [id])
@@ -126,6 +183,7 @@
             var rez = $http(request);
             rez.success(function(data){
                 $scope.detailItem = data;
+                $scope.detailItem.average_rate = parseFloat($scope.detailItem.average_rate).toFixed(1);
             });
             rez.error(function(data){
                 alert(error + data);
@@ -134,9 +192,5 @@
 
         $scope.categoryList();
 
-        //$scope.countSet = function(countName, countVal){
-        //    $scope.counter = { id: countName, val: countVal };
-        //    $scope.counterSet.push($scope.counter);
-        //};
     });
 })();
