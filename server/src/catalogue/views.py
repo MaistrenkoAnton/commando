@@ -50,7 +50,6 @@ class ItemListView(APIView):
 
     def get(self, request, pk):
         response_data = self.serializer(self._get_queryset(pk), many=True).data
-        print response_data
         return Response(response_data)
 
     def _get_queryset(self, pk):
