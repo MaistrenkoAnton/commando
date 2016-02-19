@@ -1,0 +1,5 @@
+{{ object.price }}
+{{ object.name }}
+{{ object.category }}
+{{ object.store }}
+{{ object.average_rate }}

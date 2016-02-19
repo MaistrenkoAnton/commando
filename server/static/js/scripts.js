@@ -5,14 +5,9 @@
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     });
-<<<<<<< HEAD
     app.constant('API_URL', 'http://127.0.0.1:8000');
     app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, djangoUrl){
         'use strict';
-=======
-app.controller('myCtrl', function($scope, $http, UserFactory, API_URL){
-    'use strict';
->>>>>>> master
 
 
         // user authorization block
@@ -119,12 +114,12 @@ app.controller('myCtrl', function($scope, $http, UserFactory, API_URL){
         // ======================================================================
 
 
-
         $scope.addCategory = '';
         $scope.catId = '';
         $scope.categoryList = function(id, name){//get list of categories and items
             $scope.detailItem='';
             $scope.items=[];
+            $scope.counterSet = [];
             if(id){
                 $scope.catId = id;
                 $scope.catName = name;
@@ -133,9 +128,9 @@ app.controller('myCtrl', function($scope, $http, UserFactory, API_URL){
                     url: djangoUrl.reverse('catalogue:item_list', [$scope.catId])
                 };
                 var rez = $http(request);
-                //var rez = $http.get(API_URL + '/itemlist/' + $scope.catId);
                 rez.success(function(data){
                     $scope.items = data;
+                    console.log(data);
                     $scope.items.forEach(function(item) {
                         item.average_rate = parseFloat(item.average_rate).toFixed(1);
                     });
@@ -161,7 +156,16 @@ app.controller('myCtrl', function($scope, $http, UserFactory, API_URL){
             }
             var rez = $http(request);
             rez.success(function(data){
-                $scope.categories = data;
+                $scope.categories = data.data;
+                data.facet.fields.parent.forEach(
+                    function(item)
+                    {
+                        $scope.counter = { id: item[0], val: item[1] };
+                        $scope.counterSet.push($scope.counter);
+                    }
+
+                );
+
             });
             rez.error(function(data){
                 alert(error + data);
@@ -184,6 +188,8 @@ app.controller('myCtrl', function($scope, $http, UserFactory, API_URL){
                 alert(error + data);
             });
         };
+
         $scope.categoryList();
+
     });
 })();

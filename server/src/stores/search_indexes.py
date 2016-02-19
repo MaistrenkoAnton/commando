@@ -1,10 +1,10 @@
 from haystack import indexes
-from .models import Item, Category
+from .models import Store, StoreItem
 
 
-class ItemIndex(indexes.SearchIndex, indexes.Indexable):
+class StoreItemIndex(indexes.SearchIndex, indexes.Indexable):
     """
-    Class for indexing List of Items
+    Class for indexing List of StoreItems
     """
     text = indexes.CharField(document=True, use_template=True)
     id = indexes.IntegerField(model_attr='pk')
@@ -15,9 +15,13 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     description = indexes.CharField(model_attr='description')
     average_rate = indexes.DecimalField(model_attr='average_rate')
     comments_total = indexes.IntegerField(model_attr='comments_total')
+    store = indexes.IntegerField(model_attr='store__id')
+    quantity = indexes.IntegerField(model_attr='quantity')
+    running_out_level = indexes.IntegerField(model_attr='running_out_level')
+    running_out = indexes.BooleanField(model_attr='running_out')
 
     def get_model(self):
-        return Item
+        return StoreItem
 
     def index_queryset(self, using=None):
         """
@@ -26,17 +30,18 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
         return self.get_model().objects.all()
 
 
-class CategoryIndex(indexes.SearchIndex, indexes.Indexable):
+class StoreIndex(indexes.SearchIndex, indexes.Indexable):
     """
-    Class for indexing list of categories
+    Class for indexing list of Stores
     """
     text = indexes.CharField(document=True, use_template=True)
     id = indexes.IntegerField(model_attr='pk')
-    name = indexes.CharField(model_attr='name', faceted=True)
-    parent = indexes.CharField(model_attr='parent__id', default='None', faceted=True)
+    title = indexes.CharField(model_attr='title')
+    margin = indexes.DecimalField(model_attr='margin')
+    activity_status = indexes.BooleanField(model_attr='activity_status')
 
     def get_model(self):
-        return Category
+        return Store
 
     def index_queryset(self, using=None):
         """
