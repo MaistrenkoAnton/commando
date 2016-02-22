@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
@@ -59,6 +59,7 @@ class ItemAddView(generics.CreateAPIView):
     """
     Add Item
     """
+    permission_classes = (IsAdminUser,)
     queryset = Item.objects.all()
     serializer_class = ItemAddSerializer
 
@@ -67,15 +68,9 @@ class ItemUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
     Update Item
     """
+    permission_classes = (IsAdminUser,)
     queryset = Item.objects.all()
     serializer_class = ItemDetailSerializer
-
-
-# class ItemDeleteView(generics.DestroyAPIView):
-#     """
-#     Update Item
-#     """
-#     queryset = Item.objects.all()
 
 
 class CategoryAddView(generics.CreateAPIView):
