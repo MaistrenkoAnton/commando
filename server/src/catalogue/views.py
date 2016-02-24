@@ -1,10 +1,9 @@
 from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
-from .serializers import (CategoryAddSerializer, ItemAddSerializer,
+from .serializers import (CategoryAddSerializer, ItemAddSerializer, ItemDetailSerializer,
                           CommentAddSerializer, RateAddSerializer)
 from .models import Item, Category, Comment, Rate
 from .haystack_serializers import ItemListHaystackSerializer, CategoryListHaystackSerializer
@@ -60,8 +59,18 @@ class ItemAddView(generics.CreateAPIView):
     """
     Add Item
     """
+    permission_classes = (IsAdminUser,)
     queryset = Item.objects.all()
     serializer_class = ItemAddSerializer
+
+
+class ItemUpdateView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Update Item
+    """
+    permission_classes = (IsAdminUser,)
+    queryset = Item.objects.all()
+    serializer_class = ItemDetailSerializer
 
 
 class CategoryAddView(generics.CreateAPIView):

@@ -9,11 +9,12 @@ class CategoryAdmin(tree_editor.TreeEditor):
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'image_url', 'description', 'category', 'average_rate', 'comments_total', 'rates_total')
+    list_display = ('name', 'store', 'price', 'quantity', 'running_out_level', 'running_out',
+                    'image_url', 'category', 'average_rate', 'comments_total')
     list_display_links = ('name',)
-    list_filter = ('name', )
+    list_filter = ('category', 'store')
     ordering = ('price', )
-    search_fields = ('name', 'description',)
+    search_fields = ('name', 'description')
 
 
 class CommentAdmin(admin.ModelAdmin):

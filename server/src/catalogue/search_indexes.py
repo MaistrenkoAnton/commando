@@ -8,13 +8,17 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     """
     text = indexes.CharField(document=True, use_template=True)
     id = indexes.IntegerField(model_attr='pk')
-    price = indexes.CharField(model_attr='price')
+    price = indexes.DecimalField(model_attr='price')
     name = indexes.CharField(model_attr='name')
     image_url = indexes.CharField(model_attr='image_url')
     category = indexes.IntegerField(model_attr='category__id')
     description = indexes.CharField(model_attr='description')
     average_rate = indexes.DecimalField(model_attr='average_rate')
     comments_total = indexes.IntegerField(model_attr='comments_total')
+    store = indexes.IntegerField(model_attr='store__id')
+    quantity = indexes.IntegerField(model_attr='quantity')
+    running_out_level = indexes.IntegerField(model_attr='running_out_level')
+    running_out = indexes.BooleanField(model_attr='running_out')
 
     def get_model(self):
         return Item
