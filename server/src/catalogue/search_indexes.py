@@ -29,6 +29,12 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
         """
         return self.get_model().objects.all()
 
+    def prepare_image_url(self, obj):
+        """
+        Prepare image_url field to be displayed correctly
+        """
+        return obj.image_url.url
+
 
 class CategoryIndex(indexes.SearchIndex, indexes.Indexable):
     """

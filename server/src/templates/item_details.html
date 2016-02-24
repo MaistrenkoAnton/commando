@@ -1,0 +1,28 @@
+{% load djangular_tags %}
+<div class="row">
+        <h2><span ng-bind="currentItem.name"></span><a href="#" class="btn btn-success pull-right" role="button">Add to Cart</a></h2>
+        <img src="{% angularjs %}{{ currentItem.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ currentItem.name }}{% endangularjs %} image">
+        <div class="caption">
+            <p>
+                <i ng-repeat="star in currentItem.stars track by $index"
+                   ng-class="star == 'full' ? 'fa fa-star ' : (star == 'half' ? 'fa fa-star-half-o' : 'fa fa-star-o')"></i>
+                <span class="comments_total">Comments: {% angularjs %}{{ currentItem.comments_total }}{% endangularjs %}</span>
+            </p>
+            <h5><strong>Description:</strong></h5>
+            <p ng-bind="currentItem.description"></p>
+            <p class="row">
+                    <button class="btn btn-info" id="set_rate_button" ng-click="setRate(rateInput);">Set Rate</button>
+                    <label class="radio-inline" ng-repeat="number in [1, 2, 3, 4, 5]">
+                        <input type="radio" ng-model="$parent.rateInput"
+                               value="{% angularjs %}{{ number }}{% endangularjs %}"> {% angularjs %}{{ number }}{% endangularjs %}
+                    </label>
+                    <button class="btn btn-success pull-right" ng-click="setComment(commentInput);">Leave Comment</button>
+                <br><br>
+                <textarea title="comment-input" class="form-control" rows="3" ng-model="commentInput"
+                          placeholder="Write your comment here" required></textarea>
+            </p>
+
+
+
+        </div>
+</div>

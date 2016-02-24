@@ -109,9 +109,9 @@
         function setComment(commentInput, itemId, userId, username){
             var url = djangoUrl.reverse('catalogue:add_comment');
             var data = {text: commentInput,
-                        item: itemId,
-                        user: userId,
-                        author: username};
+                item: itemId,
+                user: userId,
+                author: username};
             return $http.post(url, data)
                 .then(function success(response){
                     return response;
@@ -122,7 +122,8 @@
     app.factory('RateFactory', function RateFactory($http, AuthTokenFactory, djangoUrl){
         'use strict';
         return {
-            setRate: setRate
+            setRate: setRate,
+            checkRateAlreadySet: checkRateAlreadySet
         };
 
         function setRate(rateInput, itemId, userId){
@@ -131,6 +132,89 @@
                         item: itemId,
                         user: userId};
             return $http.post(url, data)
+                .then(function success(response){
+                    return response;
+                })
+        }
+
+        function checkRateAlreadySet(userId, itemId){
+            var url = djangoUrl.reverse('catalogue:check_rate_set', [userId, itemId]);
+            return $http.get(url)
+                .then(function success(response){
+                    return response;
+                })
+        }
+    });
+
+    app.factory('StoresFactory', function StoresFactory($http, djangoUrl){
+        'use strict';
+        return {
+            getStoresList: getStoresList,
+            getStore: getStore
+        };
+
+        function getStoresList(){
+            var url = djangoUrl.reverse('stores:store_list');
+            return $http.get(url)
+                .then(function success(response){
+                    return response;
+                })
+        }
+
+        function getStore(storeId){
+            var url = djangoUrl.reverse('stores:account_store', [storeId]);
+            return $http.get(url)
+                .then(function success(response){
+                    return response;
+                })
+        }
+    });
+
+    app.factory('CategoriesFactory', function CategoriesFactory($http, djangoUrl) {
+        'use strict';
+        return {
+            getCategoriesList: getCategoriesList
+        };
+
+        function getCategoriesList(parentCategory){
+            var url = '';
+            if (parentCategory){
+                url = djangoUrl.reverse('catalogue:category_list', [parentCategory.id])
+            }
+            else {
+                url = djangoUrl.reverse('catalogue:category_list_root')
+            }
+            return $http.get(url)
+                .then(function success(response){
+                    return response;
+                })
+        }
+    });
+
+    app.factory('ItemsFactory', function ItemsFactory($http, djangoUrl) {
+        'use strict';
+        return {
+            getItemsList: getItemsList,
+            getItemDetails: getItemDetails
+        };
+
+        function getItemsList(category, store){
+            var url = "";
+            if (store.id == "master"){
+                url = djangoUrl.reverse('catalogue:item_list', [category.id]);
+            }
+            else{
+                url = djangoUrl.reverse('stores:item_list', [category.id, store.id])
+            }
+            return $http.get(url)
+                .then(function success(response){
+                    return response;
+                })
+        }
+
+        function getItemDetails(item){
+            var url = djangoUrl.reverse('catalogue:item_detail', [item.id]);
+            return $http.get(url)
                 .then(function success(response){
                     return response;
                 })

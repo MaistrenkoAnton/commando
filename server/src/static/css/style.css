@@ -10,7 +10,22 @@
 #nav-username{
     color: #c6c6c6;
 }
-.errors{
+.errors, {
     font-weight: 900;
     color: #e9322d;
+}
+.fa-star, .fa-star-half-o, .fa-star-o{
+    color: #dab73c;
+}
+
+.comments_total{
+    padding-left: 1.5em;
+    color: #337ab7;
+}
+
+#set_rate_button{
+    margin-right: 5em;
+}
+#nav_store_name{
+    color: #ffe272;
 }
