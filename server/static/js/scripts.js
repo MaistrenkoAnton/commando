@@ -7,7 +7,7 @@
     });
     app.constant('API_URL', 'http://127.0.0.1:8000');
     app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, StoresFactory,
-                                      CategoriesFactory, ItemsFactory, djangoUrl){
+                                      CategoriesFactory, ItemsFactory){
         'use strict';
 
         // user authorization block
@@ -188,8 +188,7 @@
 
 
         function parentCategoryActive(category){
-            var res = $scope.parentCategoriesList.length > 0 && category == $scope.parentCategoriesList[-1];
-            return res;
+            return $scope.parentCategoriesList.length > 0 && category == $scope.parentCategoriesList[-1];
         }
 
         function isCurrentCategory(category) {
@@ -244,16 +243,19 @@
                 else {
                     $scope.canShowActiveCategory = true;
                 }
-                response.data.facet.fields.parent.forEach(
-                    function(item)
-                    {
-                        for (var i = 0; i < $scope.categoriesList.length; i++){
-                            if ($scope.categoriesList[i].id == item[0]){
-                                $scope.categoriesList[i].facet = item[1];
+                if (response.data.facet.fields.parent){
+                    response.data.facet.fields.parent.forEach(
+                        function(item)
+                        {
+                            for (var i = 0; i < $scope.categoriesList.length; i++){
+                                if ($scope.categoriesList[i].id == item[0]){
+                                    $scope.categoriesList[i].facet = item[1];
+                                }
                             }
                         }
-                    }
-                );
+                    );
+                }
+
             }, handleServerError);
         }
 
@@ -433,14 +435,6 @@
             $scope.currentStore = store;
             $scope.resetCategoriesData();
         }
-
-
-        // states
-        // =====================================================================
-
-
-        // =====================================================================
-
 
     });
 })();
