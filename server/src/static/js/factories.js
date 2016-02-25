@@ -173,7 +173,8 @@
     app.factory('CategoriesFactory', function CategoriesFactory($http, djangoUrl) {
         'use strict';
         return {
-            getCategoriesList: getCategoriesList
+            getCategoriesList: getCategoriesList,
+            setAllCategories: setAllCategories
         };
 
         function getCategoriesList(parentCategory){
@@ -189,13 +190,24 @@
                     return response;
                 })
         }
+
+        function setAllCategories(){
+            var url = djangoUrl.reverse('catalogue:all_categories_list');
+            return $http.get(url)
+                .then(function success(response){
+                    return response;
+                })
+        }
     });
 
     app.factory('ItemsFactory', function ItemsFactory($http, djangoUrl) {
         'use strict';
         return {
             getItemsList: getItemsList,
-            getItemDetails: getItemDetails
+            getItemDetails: getItemDetails,
+            deleteItem: deleteItem,
+            editItem: editItem,
+            createItem: createItem
         };
 
         function getItemsList(category, store){
@@ -218,6 +230,51 @@
                 .then(function success(response){
                     return response;
                 })
+        }
+
+        function deleteItem(item){
+            var url = djangoUrl.reverse('stores:update_delete_item', [item.id]);
+            return $http.delete(url)
+                .then(function success(response){
+                    return response;
+                })
+        }
+
+        function editItem(item){
+            var url = djangoUrl.reverse('stores:update_delete_item', [item.id]);
+            var data = {
+                name: item.name,
+                price: item.price,
+                category: item.category.id,
+                description: item.description,
+                //image_url: item.image_url,
+                store: item.store,
+                quantity: item.quantity,
+                running_out_level: item.running_out_level
+            };
+            return $http.put(url, data)
+                .then(function success(response){
+                    return response;
+                })
+        }
+
+        function createItem(item){
+            var url = djangoUrl.reverse('stores:add_item');
+            var data = {
+                name: item.name,
+                price: item.price,
+                category: item.category.id,
+                description: item.description,
+                //image_url: "",
+                store: item.store,
+                quantity: item.quantity,
+                running_out_level: item.running_out_level
+            };
+            return $http.post(url, data)
+                .then(function success(response){
+                    return response;
+                })
+
         }
     });
 

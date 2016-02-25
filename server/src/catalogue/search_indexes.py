@@ -33,7 +33,9 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
         """
         Prepare image_url field to be displayed correctly
         """
-        return obj.image_url.url
+        if obj.image_url:
+            return obj.image_url.url
+        return
 
 
 class CategoryIndex(indexes.SearchIndex, indexes.Indexable):

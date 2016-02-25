@@ -1,0 +1,42 @@
+{% load djangular_tags %}
+<form ng-submit="createItem(createdItem)" autocomplete="on">
+    <div class="form-group">
+        <label for="createdItemName">Name:</label>
+        <input type="text" class="form-control" id="createdItemName" placeholder="Name" ng-model="createdItem.name" required>
+    </div>
+    <div class="form-group">
+        <label for="createdItemPrice">Price:</label>
+        <input type="text" class="form-control" id="createdItemPrice" ng-model="createdItem.price" required>
+    </div>
+    <div class="form-group">
+        <label for="createdItemCategory">Category:</label><br>
+        <select id="createdItemCategory" ng-options="category as category.name for category in allCategories.availableOptions track by category.id"
+                ng-model="createdItem.category" class="form-control" required></select>
+    </div>
+    <div class="form-group">
+        <label for="createdItemDescription">Description:</label>
+        <textarea id="createdItemDescription" class="form-control" rows="3" ng-model="createdItem.description"
+                  placeholder="Description" required></textarea>
+    </div>
+    {#    <div class="form-group">#}
+    {#        <label for="editedItemImage">Image:</label>#}
+    {#        <input type="file" id="editedItemImage" ng-model="editedItem.image_url">#}
+    {#    </div>#}
+    <div class="form-group">
+        <label for="createdItemQuantity">Quantity:</label>
+        <input type="number" min="0" class="form-control" id="createdItemQuantity" ng-model="createdItem.quantity" placeholder="Quantity">
+    </div>
+    <div class="form-group">
+        <label for="createdItemRunningOutLevel">Running out level:</label>
+        <input type="number" min="0" class="form-control" id="createdItemRunningOutLevel" ng-model="createdItem.running_out_level" placeholder="Running out level">
+    </div>
+    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+        <div class="btn-group" role="group">
+            <button type="submit" class="btn btn-success">Create</button>
+        </div>
+        <div class="btn-group" role="group">
+            <button ng-click="resetCreateItemForm()" class="btn btn-warning">Reset</button>
+        </div>
+    </div>
+
+</form>

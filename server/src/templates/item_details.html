@@ -1,7 +1,9 @@
 {% load djangular_tags %}
+
 <div class="row">
+<div class="thumbnail">
         <h2><span ng-bind="currentItem.name"></span><a href="#" class="btn btn-success pull-right" role="button">Add to Cart</a></h2>
-        <img src="{% angularjs %}{{ currentItem.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ currentItem.name }}{% endangularjs %} image">
+        <img ng-src="{% angularjs %}{{ currentItem.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ currentItem.name }}{% endangularjs %} image">
         <div class="caption">
             <p>
                 <i ng-repeat="star in currentItem.stars track by $index"
@@ -25,4 +27,5 @@
 
 
         </div>
+</div>
 </div>

@@ -27,7 +27,6 @@ class ItemDetailSerializer(serializers.ModelSerializer):
     Get by id
     """
     category = CategoryListSerializer()
-    store = StoreListSerializer()
 
     class Meta:
         model = Item
