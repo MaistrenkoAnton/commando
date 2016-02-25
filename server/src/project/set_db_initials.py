@@ -52,7 +52,6 @@ def set_items(quantity=10):
             description = ''
             for k in xrange(25):
                 description += (' ' + random_word(random_number(2, 15)))
-            print description
             Item.objects.create(
                 name=("item " + str((j+1) * (i+1))),
                 price=(random_number(100, 5000) + random_number(1, 9)/100),
