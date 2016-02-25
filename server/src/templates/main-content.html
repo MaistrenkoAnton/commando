@@ -9,10 +9,10 @@
                 <div class="col-md-4">
                     <h3>Categories: </h3>
                     <div class="list-group" ng-repeat = "category in categories">
-                        <a href="#"  class="list-group-item" ng-click="categoryList(category.id, category.name)">{% angularjs %}{{ category.name }}{% endangularjs %}
+                        <a href="#"  class="list-group-item" ng-click="categoryList(category.cat_id, category.name)">{% angularjs %}{{ category.name }}{% endangularjs %}
 
                             <span ng-repeat="counter in counterSet">
-                                <span ng-if="category.id==counter.id"><strong>({% angularjs %}{{ counter.val }}{% endangularjs %})</strong></span>
+                                <span ng-if="category.cat_id==counter.id"><strong>({% angularjs %}{{ counter.val }}{% endangularjs %})</strong></span>
                             </span>
                         </a>
                     </div>
@@ -23,7 +23,7 @@
                     <h3>Items: </h3>
                     <div class="list-group" ng-repeat = "item in items">
 
-                        <a href="#" class="list-group-item" ng-click="itemDetail(item.id)" >
+                        <a href="#" class="list-group-item" ng-click="itemDetail(item.item_id)" >
                             <p ng-bind="item.name"></p>
                             <p>Comments: <span ng-bind="item.comments_total"></span>&nbsp;&nbsp;Rate: <span ng-bind="item.average_rate"></span></p>
                         </a>

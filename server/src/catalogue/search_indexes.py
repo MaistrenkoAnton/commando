@@ -6,8 +6,8 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     """
     Class for indexing List of Items
     """
-    text = indexes.CharField(document=True, use_template=True)
-    id = indexes.IntegerField(model_attr='pk')
+    text = indexes.CharField(document=True, use_template=False)
+    item_id = indexes.IntegerField(model_attr='pk')
     price = indexes.DecimalField(model_attr='price')
     name = indexes.CharField(model_attr='name')
     image_url = indexes.CharField(model_attr='image_url')
@@ -34,8 +34,8 @@ class CategoryIndex(indexes.SearchIndex, indexes.Indexable):
     """
     Class for indexing list of categories
     """
-    text = indexes.CharField(document=True, use_template=True)
-    id = indexes.IntegerField(model_attr='pk')
+    text = indexes.CharField(document=True, use_template=False)
+    cat_id = indexes.IntegerField(model_attr='pk')
     name = indexes.CharField(model_attr='name', faceted=True)
     parent = indexes.CharField(model_attr='parent__id', default='None', faceted=True)
 

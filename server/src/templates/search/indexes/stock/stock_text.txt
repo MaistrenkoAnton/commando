@@ -1,0 +1,1 @@
+{{ object.stock_id }}

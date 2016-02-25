@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^auth/', include('authentication.urls', namespace="auth")),
     url(r'^stores/', include('stores.urls', namespace="stores")),
+    url(r'^stock/', include('stock.urls', namespace="stock")),
     url(r'^docs/', include('rest_framework_swagger.urls')),
     url(r'^search/', include('haystack.urls')),
     url(r'^', include('catalogue.urls', namespace="catalogue")),

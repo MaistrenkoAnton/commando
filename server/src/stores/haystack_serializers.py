@@ -8,4 +8,4 @@ class StoreListHaystackSerializer(HaystackSerializer):
     """
     class Meta:
         index_classes = [StoreIndex]
-        fields = ['id', 'title', 'margin', 'activity_status']
+        fields = ['store_id', 'title', 'margin', 'activity_status']
