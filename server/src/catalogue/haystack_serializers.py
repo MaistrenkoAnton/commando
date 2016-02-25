@@ -20,5 +20,5 @@ class ItemListHaystackSerializer(HaystackSerializer):
         index_classes = [ItemIndex]
         fields = [
             'item_id', 'name', 'price', 'image_url', 'category', 'comments_total', 'average_rate', 'quantity',
-            'running_out_level', 'running_out'
+            'running_out_level', 'running_out', 'new_price',
         ]

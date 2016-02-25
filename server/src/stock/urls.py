@@ -2,5 +2,5 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.StockListView.as_view(), name='stocks'),
+    url(r'^stockdetail/$', views.StockListView.as_view(), name='stock'),
 ]

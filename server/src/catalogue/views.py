@@ -49,7 +49,7 @@ class ItemListView(APIView):
 
     def get(self, request, pk):
         response_data = self.serializer(self._get_queryset(pk), many=True).data
-        return Response(response_data)
+        return Response({'data': response_data})
 
     def _get_queryset(self, pk):
         return SearchQuerySet().models(self.model).filter(category=pk)
@@ -122,11 +122,31 @@ class SetRateView(generics.CreateAPIView):
         """
         Override base method to return value of 'average_rate' field of the related item_object
         """
+
         serializer = self.get_serializer(data=request.data)
+
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         response_data = {
             "average_rate": Item.objects.get(pk=serializer.data['item']).average_rate
         }
+        print request.data
         return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class RateAlreadySet(generics.RetrieveAPIView):
+    """
+    Check if User obj with defined pk already set rate to the Item obj with defined pk
+    """
+    queryset = Rate.objects.all()
+    serializer_class = RateAddSerializer
+
+    def get(self, request, *args, **kwargs):
+        response_data = {}
+        try:
+            Rate.objects.get(user=kwargs['user_pk'], item=kwargs['item_pk'])
+            response_data["rate_already_set"] = "true"
+        except:
+            response_data["rate_already_set"] = "false"
+        return Response(response_data)

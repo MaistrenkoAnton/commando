@@ -8,4 +8,4 @@ class StockListSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Stock
-        fields = [ 'store', 'item', 'end_time' , 'new_price']
+        fields = [ 'store', 'end_time', 'new_price']

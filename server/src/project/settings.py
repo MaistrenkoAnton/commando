@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'catalogue',
     'authentication',
     'stores',
+    'cart',
     'stock',
 ]
 

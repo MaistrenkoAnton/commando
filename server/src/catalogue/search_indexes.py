@@ -19,6 +19,7 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     quantity = indexes.IntegerField(model_attr='quantity')
     running_out_level = indexes.IntegerField(model_attr='running_out_level')
     running_out = indexes.BooleanField(model_attr='running_out')
+    new_price = indexes.IntegerField(model_attr='stock__new_price', default=0)
 
     def get_model(self):
         return Item
@@ -28,6 +29,14 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
         Used when the entire index for model is updated.
         """
         return self.get_model().objects.all()
+
+    def prepare_image_url(self, obj):
+        """
+        Prepare image_url field to be displayed correctly
+        """
+        if obj.image_url:
+            return obj.image_url.url
+        return
 
 
 class CategoryIndex(indexes.SearchIndex, indexes.Indexable):

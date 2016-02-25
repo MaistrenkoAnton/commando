@@ -6,9 +6,9 @@
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     });
     app.constant('API_URL', 'http://127.0.0.1:8000');
-    app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, djangoUrl){
+    app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, StoresFactory,
+                                      CategoriesFactory, ItemsFactory, CartFactory){
         'use strict';
-
 
         // user authorization block
         // ======================================================================
@@ -17,10 +17,24 @@
         $scope.register = register;
         $scope.serverError = '';
 
+        $scope.userIsAuthenticated = userIsAuthenticated;
+        $scope.userIsStaff = userIsStaff;
+
         // initialization
         UserFactory.verifyUser().then(function success(response){
             $scope.user = response.data.user;
+            $scope.user.canSetRate = true;
         });
+
+        function userIsAuthenticated(){
+            return $scope.user ? true: false;
+        }
+
+        function userIsStaff(){
+            return ($scope.user && $scope.user.is_staff === true) ? true: false;
+        }
+
+
 
         $scope.signInForm = true;
         $scope.signUpForm = false;
@@ -40,6 +54,10 @@
         function login(username, password){
             UserFactory.login(username, password).then(function success(response){
                 $scope.user = response.data.user;
+                if ($scope.currentItem){
+                    $scope.user.canSetRate = checkRateAlreadySet($scope.user.id, $scope.currentItem.id);
+                }
+                $scope.user.canSetRate = true;
             }, handleServerError);
         }
 
@@ -51,6 +69,10 @@
         function register(username, password){
             UserFactory.register(username, password).then(function success(response){
                 $scope.user = response.data.user;
+                if ($scope.currentItem){
+                    $scope.user.canSetRate = checkRateAlreadySet($scope.user.id, $scope.currentItem.id);
+                }
+                $scope.user.canSetRate = true;
             }, handleServerError);
         }
 
@@ -61,135 +83,368 @@
         // ======================================================================
 
         /*
-        Comments and rates block
+         Comments and rates block
          */
         // ======================================================================
-        $scope.setComment = setComment;
-        $scope.setRate = setRate;
 
-        $scope.setCommentError = null;
-        $scope.setRateError = null;
+        $scope.alreadySetRate = false;
+        $scope.checkRateAlreadySet = checkRateAlreadySet;
 
-        function setComment(commentInput){
+        function canSetRate(){
             if (!$scope.user){
-                $scope.setCommentError = "You need to sign in to leave a comment.";
-                alert($scope.setCommentError);
+                return [false, "You need to be logged in to set rate."]
             }
             else{
-                CommentFactory.setComment(commentInput, $scope.detailItem.id, $scope.user.id, $scope.user.username)
-                    .then(function success(response){
-                    $scope.commentInput = '';
-                    $scope.detailItem.comments_total = response.data.comments_total;
-                    $scope.items.forEach(function(item) {
-                      if (item.id == $scope.detailItem.id){
-                          item.comments_total = $scope.detailItem.comments_total;
-                      }
-
-                    });
-                }, handleServerError);
+                checkRateAlreadySet();
+                if ($scope.alreadySetRate){
+                    return [false, "You've already set rate to this item"];
+                }
+                else{
+                    return [true];
+                }
             }
         }
+
+        function checkRateAlreadySet(userId, itemId){
+            RateFactory.checkRateAlreadySet(userId, itemId).then(function success(response){
+                return Boolean(response.data);
+            }, handleServerError);
+        }
+
+        $scope.setRate = setRate;
 
         function setRate(rateInput){
             if (!$scope.user){
-                $scope.setRateError = "You need to sign in to set rate.";
-                alert($scope.setRateError);
+                alert("You need to be logged in to set rate.");
+            }
+            else if (!$scope.user.canSetRate){
+                alert("You've already set rate to this item");
             }
             else{
-                RateFactory.setRate(rateInput, $scope.detailItem.id, $scope.user.id).then(function success(response){
-                    $scope.rateInput = null;
-                    $scope.detailItem.average_rate = parseFloat(response.data.average_rate).toFixed(1);
-                    $scope.items.forEach(function(item) {
-                      if (item.id == $scope.detailItem.id){
-                          item.average_rate = $scope.detailItem.average_rate;
-                      }
-                    });
-                }, function error(response){
-                    var error = response.data.non_field_errors;
-                    alert(error);
-                });
+                RateFactory.setRate(rateInput, $scope.currentItem.id, $scope.user.id)
+                    .then(function success(response){
+                        $scope.currentItem.average_rate = response.data.average_rate;
+                        $scope.currentItem.stars = generateStarsArray($scope.currentItem.average_rate);
+                        $scope.user.canSetRate = false;
+                        $scope.rateInput = null;
+                    }, handleServerError);
             }
         }
 
-        // ======================================================================
+        $scope.setComment = setComment;
 
-
-        $scope.addCategory = '';
-        $scope.catId = '';
-        $scope.categoryList = function(id, name){//get list of categories and items
-            $scope.detailItem='';
-            $scope.items=[];
-            $scope.counterSet = [];
-            if(id){
-                $scope.catId = id;
-                $scope.catName = name;
-                var request = {
-                    method: 'GET',
-                    url: djangoUrl.reverse('catalogue:item_list', [$scope.catId])
-                };
-                var rez = $http(request);
-                rez.success(function(data){
-                    $scope.items = data;
-                    console.log(data);
-                    $scope.items.forEach(function(item) {
-                        item.average_rate = parseFloat(item.average_rate).toFixed(1);
-                    });
-                });
-                rez.error(function(data){
-                    alert(error + data);
-                });
+        function setComment(commentInput){
+            if (!$scope.user){
+                alert("You need to be logged in to leave the comment.");
             }
             else{
-                $scope.catId = '';
-                $scope.catName='Root';
+                CommentFactory.setComment(commentInput, $scope.currentItem.id, $scope.user.id, $scope.user.username)
+                    .then(function success(response){
+                        $scope.currentItem.comments_total = response.data.comments_total;
+                        for (var i = 0; i < $scope.itemsList.length; i++){
+                            if ($scope.itemsList[i].id == $scope.currentItem.id){
+                                $scope.itemsList[i].comments_total = $scope.currentItem.comments_total
+                            }
+                        }
+                        $scope.commentInput = null;
+                    }, handleServerError);
             }
-            if ($scope.catId == '') {
-                var request = {
-                    method: 'GET',
-                    url: djangoUrl.reverse('catalogue:category_list_root')
-                };
-            } else{
-                var request = {
-                    method: 'GET',
-                    url: djangoUrl.reverse('catalogue:category_list', [$scope.catId])
-                };
+        }
+
+        // CATEGORIES AND ITEMS BLOCK
+        // =================================================================================================
+
+        // items and categories data initials
+        $scope.itemsList = [];
+        $scope.categoriesList = [];
+        $scope.parentCategoriesList = [];
+        $scope.currentCategory = null;
+        $scope.currentItem = null;
+        $scope.detailItem = null;
+
+
+        // items ang categories states
+        $scope.isCreatingItem = false;
+        $scope.isEditingItem = false;
+        $scope.isCurrentCategory = null;
+        $scope.isCurrentItem = null;
+        $scope.editedItem = null;
+
+
+        $scope.isCurrentCategory = isCurrentCategory;
+        $scope.isCurrentItem = isCurrentItem;
+        $scope.setCurrentCategory = setCurrentCategory;
+        $scope.setCategoryBack = setCategoryBack;
+
+        $scope.noParentCategories = noParentCategories;
+        $scope.canShowActiveCategory = false;
+        $scope.parentCategoryActive = parentCategoryActive;
+        $scope.noItems = noItems;
+        $scope.setCurrentItem = setCurrentItem;
+
+        function noParentCategories(){
+            return $scope.parentCategoriesList.length == 0;
+        }
+
+
+        function parentCategoryActive(category){
+            var res = $scope.parentCategoriesList.length > 0 && category == $scope.parentCategoriesList[-1];
+            return res;
+        }
+
+        function isCurrentCategory(category) {
+            return $scope.currentCategory && category.name === $scope.currentCategory.name && $scope.canShowActiveCategory == true;
+        }
+
+        function isCurrentItem(item) {
+            return $scope.currentItem && item.name === $scope.currentItem.name;
+        }
+
+        function noItems(){
+            return $scope.itemsList.length > 0;
+        }
+
+        function setCurrentItem(item){
+            $scope.getItemDetails(item);
+        }
+
+        function setCurrentCategory(category) {
+            if ($scope.canShowActiveCategory){
+                $scope.parentCategoriesList.pop();
             }
-            var rez = $http(request);
-            rez.success(function(data){
-                $scope.categories = data.data;
-                data.facet.fields.parent.forEach(
+            $scope.parentCategoriesList.push(category);
+            $scope.currentCategory = category;
+            $scope.resetItemData();
+            $scope.getCategoriesList(category);
+            $scope.getItemsList(category);
+        }
+
+        function setCategoryBack(category){
+            if (category){
+                var targetCategoryIndex = $scope.parentCategoriesList.indexOf(category);
+                $scope.parentCategoriesList.splice(-targetCategoryIndex);
+                $scope.setCurrentCategory(category)
+            }
+            else {
+                $scope.resetCategoriesData();
+            }
+        }
+
+
+        $scope.getCategoriesList = getCategoriesList;
+        $scope.getItemsList = getItemsList;
+        $scope.getItemDetails = getItemDetails;
+
+        function getCategoriesList(category){
+            CategoriesFactory.getCategoriesList(category).then(function success(response){
+                if (response.data.data.length > 0){
+                    $scope.categoriesList = response.data.data;
+                    $scope.canShowActiveCategory = false;
+                }
+                else {
+                    $scope.canShowActiveCategory = true;
+                }
+                response.data.facet.fields.parent.forEach(
                     function(item)
                     {
-                        $scope.counter = { id: item[0], val: item[1] };
-                        $scope.counterSet.push($scope.counter);
+                        for (var i = 0; i < $scope.categoriesList.length; i++){
+                            if ($scope.categoriesList[i].cat_id == item[0]){
+                                $scope.categoriesList[i].facet = item[1];
+                            }
+                        }
                     }
-
                 );
+            }, handleServerError);
+        }
 
-            });
-            rez.error(function(data){
-                alert(error + data);
-            });
+        function generateStarsArray(rate){
+            var starsArray = [];
+            var fullStars = Math.floor(rate);
+            var delta = rate - fullStars;
+            if (delta > 0.8){
+                fullStars ++;
+                delta = null;
+            }
+            else if(delta < 0.4){
+                delta = null;
+            }
+            for (var i = 0; i < 5; i++){
+                if (fullStars >= i+1){
+                    starsArray.push("full");
+                }
+                else if( ((i == 0) || (starsArray[i-1] == "full")) && delta){
+                    starsArray.push("half");
+                }
+                else{
+                    starsArray.push("empty");
+                }
+            }
+            return starsArray;
+        }
+
+        function getItemsList(category){
+            ItemsFactory.getItemsList(category, $scope.currentStore).then(function success(response){
+                $scope.itemsList = response.data.data;
+                if ($scope.itemsList){
+                    for (var i = 0; i < $scope.itemsList.length; i++){
+                        $scope.itemsList[i].stars = generateStarsArray($scope.itemsList[i].average_rate)
+                    }
+                }
+            })
+        }
+
+        function getItemDetails(item){
+            ItemsFactory.getItemDetails(item).then(function success(response){
+                $scope.currentItem = response.data;
+                $scope.currentItem.stars = generateStarsArray($scope.currentItem.average_rate);
+                $scope.rateInput = null;
+                if ($scope.user){
+                    $scope.user.canSetRate = !checkRateAlreadySet($scope.user.id, $scope.currentItem.item_id);
+                }
+            })
+        }
+
+        // initialize categories and items data on start
+        getCategoriesList();
 
 
-        };
-        $scope.itemDetail = function(id){// get detail info about item from server
-            $scope.commentInput = $scope.rateInput = null; // clear form values when switching items
-            var request = {
-                method: 'GET',
-                url: djangoUrl.reverse('catalogue:item_detail', [id])
+        $scope.resetCategoriesData = resetCategoriesData;
+
+        function resetCategoriesData(){
+            $scope.categoriesList = [];
+            $scope.parentCategoriesList = [];
+            $scope.currentCategory = null;
+            $scope.getCategoriesList();
+            $scope.resetItemData();
+        }
+
+
+        $scope.resetItemData = resetItemData;
+
+        function resetItemData(){
+            $scope.itemsList = [];
+            $scope.currentItem = null;
+            $scope.isCurrentItem = null;
+            if ($scope.user){
+                $scope.user.canSetRate = false;
+            }
+            $scope.rateInput = null;
+            cancelCreatingItem();
+            cancelEditingItem();
+            if ($scope.newItem) {$scope.newItem = null;}
+        }
+
+
+        function setEditedItem(item) {
+            $scope.editedItem = angular.copy(item);
+        }
+
+        function isSelectedItem(item) {
+            return $scope.editedItem !== null && $scope.editedItem.id === item.id;
+        }
+
+        $scope.setEditedBookmark = setEditedItem;
+        $scope.isSelectedBookmark = isSelectedItem;
+
+        function resetCreateItemForm() {
+            $scope.newItem = {
+                name: '',
+                price: '',
+                image_url: '',
+                description: '',
+                category: '',
+                quantity: '',
+                running_out_level: '',
+                store: $scope.store.id
             };
-            var rez = $http(request);
-            rez.success(function(data){
-                $scope.detailItem = data;
-                $scope.detailItem.average_rate = parseFloat($scope.detailItem.average_rate).toFixed(1);
-            });
-            rez.error(function(data){
-                alert(error + data);
-            });
-        };
+        }
 
-        $scope.categoryList();
+        function shouldShowCreatingItem() {
+            return $scope.accountStoreActive && !$scope.isEditingItem && $scope.userIsStaff;
+        }
+
+        function startCreatingItem() {
+            $scope.isCreatingItem = true;
+            $scope.isEditingItem = false;
+            resetCreateItemForm();
+        }
+
+        function cancelCreatingItem() {
+            $scope.isCreating = false;
+        }
+
+        $scope.shouldShowCreatingItem = shouldShowCreatingItem;
+        $scope.startCreatingItem = startCreatingItem;
+        $scope.cancelCreatingItem = cancelCreatingItem;
+
+        function shouldShowEditingItem() {
+            return $scope.store && !$scope.isCreatingItem && $scope.userIsStaff;
+        }
+
+        function startEditingItem() {
+            $scope.isCreatingItem = false;
+            $scope.isEditingItem = true;
+        }
+
+        function cancelEditingItem() {
+            $scope.isEditingItem = false;
+            $scope.editedItem = null;
+        }
+
+        $scope.startEditingItem = startEditingItem;
+        $scope.cancelEditingItem = cancelEditingItem;
+        $scope.shouldShowEditingItem = shouldShowEditingItem;
+        // =================================================================================================
+
+        // STORES
+        // ===============================
+        $scope.getStore = getStore;
+        $scope.setCurrentStore = setCurrentStore;
+        $scope.setMasterStore = setMasterStore;
+        $scope.getStoresList = getStoresList;
+
+        function setMasterStore(){
+            $scope.currentStore = {
+                title: "MasterStore",
+                id: "master"
+            }
+        }
+
+        function getStoresList(){
+            StoresFactory.getStoresList().then(function success(response){
+                $scope.stores = [$scope.currentStore];
+                $scope.stores = $scope.stores.concat(response.data);
+            }, handleServerError);
+        }
+
+        // initialize stores
+        setMasterStore();
+        getStoresList();
+
+        function getStore(storeId){
+            StoresFactory.getStore(storeId).then(function success(response){
+                $scope.currentStore = response.data;
+            })
+        }
+
+        function setCurrentStore(store){
+            $scope.currentStore = store;
+            $scope.resetCategoriesData();
+        }
+
+
+        // CART
+        // =======================================================================
+        $scope.addToCart = addToCart;
+
+        function addToCart(){
+            CartFactory.addToCart().then(function success(response){
+
+            }, handleServerError);
+        }
+
+        // =======================================================================
+
 
     });
 })();

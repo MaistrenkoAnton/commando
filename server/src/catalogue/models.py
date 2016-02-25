@@ -3,6 +3,7 @@ import mptt
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from stores.models import Store
+from stock.models import Stock
 
 
 class Category(models.Model):
@@ -38,7 +39,7 @@ class Item(models.Model):
 
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=20, decimal_places=2, blank=False, null=False)
-    image_url = models.ImageField(blank=True)
+    image_url = models.ImageField(blank=True, default='/static/images.jpg')
     description = models.TextField()
     category = models.ForeignKey(Category)
     average_rate = models.DecimalField(max_digits=6, decimal_places=5, default=0.0)
@@ -49,6 +50,7 @@ class Item(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0, blank=True)
     running_out_level = models.IntegerField(default=10, blank=True)
+    stock = models.ForeignKey(Stock, blank=True, null=True)
 
     @property
     def running_out(self):
