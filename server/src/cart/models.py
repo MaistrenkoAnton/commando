@@ -9,3 +9,4 @@ class Cart(models.Model):
     item = models.ForeignKey(Item)
     purchase_time = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField()
+

@@ -51,7 +51,6 @@
             }
         }
 
-
         function verifyUser(){
             var token = AuthTokenFactory.getToken();
             if (token){

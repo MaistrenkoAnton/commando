@@ -588,39 +588,7 @@
             })
         }
 
-
-
         // =======================================================================
 
     });
 })();
-
-
-
-//data = {
-//    user: userID,
-//    items: [
-//        {
-//            item: itemID,
-//            qty: qty
-//        },
-//        {
-//            item: itemID,
-//            qty: qty
-//        },
-//        {
-//            item: itemID,
-//            qty: qty
-//        },
-//        {
-//            item: itemID,
-//            qty: qty
-//        },
-//        {
-//            item: itemID,
-//            qty: qty
-//        }
-//    ]
-//};
-//
-//$http.post(url, data);
