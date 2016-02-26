@@ -49,7 +49,6 @@
 
         function login(username, password){
             UserFactory.login(username, password).then(function success(response){
-                console.log(response);
                 $scope.user = response.data.user;
                 if ($scope.currentItem){
                     $scope.user.canSetRate = checkRateAlreadySet($scope.user.id, $scope.currentItem.id);
@@ -579,7 +578,6 @@
             for (i = 0; i < itemsToRemove.length; i++){
                 $scope.removeFromCart(itemsToRemove[i], cart);
             }
-            console.log(cart);
             CartFactory.purchase(cart).then(function success(response){
                 alert("Purchase sucessful!");
                 $scope.cart = null;
