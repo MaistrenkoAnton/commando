@@ -1,23 +1,31 @@
 {% extends "index.html" %}
 {% load djangular_tags %}
 {% block content %}
+    <div ng-show="user" class="container-fluid">
+        <div class="row">
+            <a href="#" class="pull-right top-right-coener"><i class="fa fa-shopping-cart fa-5x"></i></a>
+        </div>
+    </div>
     <div class="container">
         <div class="col-sm-3">
             <div class="row">
-
                 {% include 'categories_breadcrumb.html' %}
             </div>
             <div class="row">
                 {% include 'categories_list.html' %}
             </div>
         </div>
-        <div class="col-sm-8 col-sm-offset-1" ng-hide="currentItem">
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemsList'">
             {% include 'items_list.html' %}
         </div>
-        <div class="col-sm-8 col-sm-offset-1" ng-show="currentItem">
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemDetails'">
             {% include 'item_details.html' %}
         </div>
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemCreate'">
+            {% include 'item-create-form.html' %}
+        </div>
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemEdit'">
+            {% include 'item-edit-form.html' %}
+        </div>
     </div>
-
-
 {% endblock content %}

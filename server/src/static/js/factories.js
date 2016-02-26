@@ -173,7 +173,8 @@
     app.factory('CategoriesFactory', function CategoriesFactory($http, djangoUrl) {
         'use strict';
         return {
-            getCategoriesList: getCategoriesList
+            getCategoriesList: getCategoriesList,
+            setAllCategories: setAllCategories
         };
 
         function getCategoriesList(parentCategory){
@@ -189,19 +190,29 @@
                     return response;
                 })
         }
+
+        function setAllCategories(){
+            var url = djangoUrl.reverse('catalogue:all_categories_list');
+            return $http.get(url)
+                .then(function success(response){
+                    return response;
+                })
+        }
     });
 
     app.factory('ItemsFactory', function ItemsFactory($http, djangoUrl) {
         'use strict';
         return {
             getItemsList: getItemsList,
-            getItemDetails: getItemDetails
+            getItemDetails: getItemDetails,
+            deleteItem: deleteItem,
+            editItem: editItem,
+            createItem: createItem
         };
 
         function getItemsList(category, store){
             var url = "";
             if (store.id == "master"){
-                console.log(category);
                 url = djangoUrl.reverse('catalogue:item_list', [category.cat_id]);
             }
             else{
@@ -220,6 +231,59 @@
                 .then(function success(response){
                     return response;
                 })
+        }
+
+        function deleteItem(itemId){
+            var url = djangoUrl.reverse('stores:update_delete_item', [itemId]);
+            return $http.delete(url)
+                .then(function success(response){
+                    return response;
+                })
+        }
+
+        function editItem(item){
+            var itemId = null;
+            if (item.id){
+                itemId = item.id;
+            }
+            else{
+                itemId = item.item_id;
+            }
+            var url = djangoUrl.reverse('stores:update_delete_item', [itemId]);
+            var data = {
+                name: item.name,
+                price: item.price,
+                category: item.category,
+                description: item.description,
+                //image_url: item.image_url,
+                store: item.store,
+                quantity: item.quantity,
+                running_out_level: item.running_out_level
+            };
+            return $http.put(url, data)
+                .then(function success(response){
+                    return response;
+                })
+        }
+
+        function createItem(item){
+            var url = djangoUrl.reverse('stores:add_item');
+            var data = {
+                name: item.name,
+                price: item.price,
+                category: item.category.cat_id,
+                description: item.description,
+                //image_url: "",
+                store: item.store,
+                quantity: item.quantity,
+                running_out_level: item.running_out_level
+            };
+            console.log(data);
+            return $http.post(url, data)
+                .then(function success(response){
+                    return response;
+                })
+
         }
     });
 

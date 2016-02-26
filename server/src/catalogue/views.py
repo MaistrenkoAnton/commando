@@ -39,6 +39,21 @@ class CategoryListView(APIView):
         return SearchQuerySet().models(self.model).filter(parent=str(pk))
 
 
+class AllCategoriesListView(APIView):
+    """
+    All categories list.
+    """
+    serializer = CategoryListHaystackSerializer
+    model = Category
+
+    def get(self, request):
+        response_data = self.serializer(self._get_queryset(), many=True).data
+        return Response({'data': response_data})
+
+    def _get_queryset(self):
+        return SearchQuerySet().models(self.model).all()
+
+
 class ItemListView(APIView):
     """
     List Items
@@ -59,7 +74,7 @@ class ItemAddView(generics.CreateAPIView):
     """
     Add Item
     """
-    permission_classes = (IsAdminUser,)
+    # permission_classes = (IsAdminUser,)
     queryset = Item.objects.all()
     serializer_class = ItemAddSerializer
 
@@ -68,9 +83,9 @@ class ItemUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
     Update Item
     """
-    permission_classes = (IsAdminUser,)
+    # permission_classes = (IsAdminUser,)
     queryset = Item.objects.all()
-    serializer_class = ItemDetailSerializer
+    serializer_class = ItemAddSerializer
 
 
 class CategoryAddView(generics.CreateAPIView):

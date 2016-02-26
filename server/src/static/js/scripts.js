@@ -5,11 +5,9 @@
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     });
-    app.constant('API_URL', 'http://127.0.0.1:8000');
     app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, StoresFactory,
                                       CategoriesFactory, ItemsFactory, CartFactory){
         'use strict';
-
         // user authorization block
         // ======================================================================
         $scope.login = login;
@@ -34,8 +32,6 @@
             return ($scope.user && $scope.user.is_staff === true) ? true: false;
         }
 
-
-
         $scope.signInForm = true;
         $scope.signUpForm = false;
         $scope.sign_link = 'Sign Up';
@@ -59,6 +55,7 @@
                 }
                 $scope.user.canSetRate = true;
             }, handleServerError);
+
         }
 
         function logout(){
@@ -181,6 +178,15 @@
         $scope.parentCategoryActive = parentCategoryActive;
         $scope.noItems = noItems;
         $scope.setCurrentItem = setCurrentItem;
+        $scope.resetItemData = resetItemData;
+        $scope.resetCategoriesData = resetCategoriesData;
+
+        $scope.getCategoriesList = getCategoriesList;
+        $scope.getItemsList = getItemsList;
+        $scope.getItemDetails = getItemDetails;
+
+        $scope.editItem = editItem;
+        $scope.deleteItem = deleteItem;
 
         function noParentCategories(){
             return $scope.parentCategoriesList.length == 0;
@@ -188,8 +194,7 @@
 
 
         function parentCategoryActive(category){
-            var res = $scope.parentCategoriesList.length > 0 && category == $scope.parentCategoriesList[-1];
-            return res;
+            return $scope.parentCategoriesList.length > 0 && category == $scope.parentCategoriesList[-1];
         }
 
         function isCurrentCategory(category) {
@@ -206,16 +211,20 @@
 
         function setCurrentItem(item){
             $scope.getItemDetails(item);
+            $scope.itemsFieldState = "itemDetails";
         }
 
         function setCurrentCategory(category) {
             if ($scope.canShowActiveCategory){
                 $scope.parentCategoriesList.pop();
             }
+            $scope.cancelCreatingItem();
+            $scope.cancelEditingItem();
             $scope.parentCategoriesList.push(category);
             $scope.currentCategory = category;
             $scope.resetItemData();
             $scope.getCategoriesList(category);
+            $scope.itemsFieldState = '';
             $scope.getItemsList(category);
         }
 
@@ -230,11 +239,6 @@
             }
         }
 
-
-        $scope.getCategoriesList = getCategoriesList;
-        $scope.getItemsList = getItemsList;
-        $scope.getItemDetails = getItemDetails;
-
         function getCategoriesList(category){
             CategoriesFactory.getCategoriesList(category).then(function success(response){
                 if (response.data.data.length > 0){
@@ -244,16 +248,19 @@
                 else {
                     $scope.canShowActiveCategory = true;
                 }
-                response.data.facet.fields.parent.forEach(
-                    function(item)
-                    {
-                        for (var i = 0; i < $scope.categoriesList.length; i++){
-                            if ($scope.categoriesList[i].cat_id == item[0]){
-                                $scope.categoriesList[i].facet = item[1];
+                if (response.data.facet.fields.parent){
+                    response.data.facet.fields.parent.forEach(
+                        function(item)
+                        {
+                            for (var i = 0; i < $scope.categoriesList.length; i++){
+                                if ($scope.categoriesList[i].cat_id == item[0]){
+                                    $scope.categoriesList[i].facet = item[1];
+                                }
                             }
                         }
-                    }
-                );
+                    );
+                }
+
             }, handleServerError);
         }
 
@@ -285,6 +292,9 @@
         function getItemsList(category){
             ItemsFactory.getItemsList(category, $scope.currentStore).then(function success(response){
                 $scope.itemsList = response.data.data;
+                if ($scope.itemsList && $scope.itemsList.length > 0){
+                    $scope.itemsFieldState = "itemsList";
+                }
                 if ($scope.itemsList){
                     for (var i = 0; i < $scope.itemsList.length; i++){
                         $scope.itemsList[i].stars = generateStarsArray($scope.itemsList[i].average_rate)
@@ -299,7 +309,7 @@
                 $scope.currentItem.stars = generateStarsArray($scope.currentItem.average_rate);
                 $scope.rateInput = null;
                 if ($scope.user){
-                    $scope.user.canSetRate = !checkRateAlreadySet($scope.user.id, $scope.currentItem.item_id);
+                    $scope.user.canSetRate = !checkRateAlreadySet($scope.user.id, $scope.currentItem.id);
                 }
             })
         }
@@ -307,19 +317,42 @@
         // initialize categories and items data on start
         getCategoriesList();
 
-
-        $scope.resetCategoriesData = resetCategoriesData;
-
         function resetCategoriesData(){
             $scope.categoriesList = [];
             $scope.parentCategoriesList = [];
             $scope.currentCategory = null;
+            $scope.itemsFieldState = '';
             $scope.getCategoriesList();
             $scope.resetItemData();
         }
 
+        function deleteItem(item){
+            if ($scope.userIsStaff()){
+                var itemId = null;
+                if (item.id){
+                    itemId = item.id;
+                }
+                else{
+                    itemId = item.item_id;
+                }
+                ItemsFactory.deleteItem(itemId).then(function success(response){
+                    $scope.setCurrentCategory($scope.currentCategory);
+                })
+            }
+            else{
+                alert("You need to be logged in as staff member to delete items!");
+            }
 
-        $scope.resetItemData = resetItemData;
+        }
+
+
+        function editItem(item){
+            ItemsFactory.editItem(item).then(function success(response){
+                $scope.setCurrentItem(response.data);
+                $scope.isEditingItem = false;
+                $scope.editedItem = null;
+            });
+        }
 
         function resetItemData(){
             $scope.itemsList = [];
@@ -334,7 +367,6 @@
             if ($scope.newItem) {$scope.newItem = null;}
         }
 
-
         function setEditedItem(item) {
             $scope.editedItem = angular.copy(item);
         }
@@ -346,54 +378,131 @@
         $scope.setEditedBookmark = setEditedItem;
         $scope.isSelectedBookmark = isSelectedItem;
 
-        function resetCreateItemForm() {
-            $scope.newItem = {
-                name: '',
-                price: '',
-                image_url: '',
-                description: '',
-                category: '',
-                quantity: '',
-                running_out_level: '',
-                store: $scope.store.id
-            };
-        }
-
-        function shouldShowCreatingItem() {
-            return $scope.accountStoreActive && !$scope.isEditingItem && $scope.userIsStaff;
-        }
+        $scope.startCreatingItem = startCreatingItem;
 
         function startCreatingItem() {
-            $scope.isCreatingItem = true;
-            $scope.isEditingItem = false;
-            resetCreateItemForm();
+            if (!$scope.userIsStaff()){
+                alert("You need to be logged in as staff member to edit items!");
+            }
+            else if ($scope.currentStore.id == 'master'){
+                alert("You can not create items from Master store!");
+            }
+            else{
+                $scope.itemsFieldState = "itemCreate";
+                $scope.createdItem = {
+                    name: '',
+                    price: null,
+                    category: null,
+                    description: '',
+                    store: $scope.currentStore.id,
+                    quantity: null,
+                    running_out_level: null
+                };
+                $scope.isCreatingItem = true;
+                $scope.setAllCategories();
+            }
         }
 
-        function cancelCreatingItem() {
-            $scope.isCreating = false;
-        }
-
-        $scope.shouldShowCreatingItem = shouldShowCreatingItem;
-        $scope.startCreatingItem = startCreatingItem;
         $scope.cancelCreatingItem = cancelCreatingItem;
 
-        function shouldShowEditingItem() {
-            return $scope.store && !$scope.isCreatingItem && $scope.userIsStaff;
-        }
-
-        function startEditingItem() {
+        function cancelCreatingItem(){
+            $scope.createdItem = null;
+            $scope.allCategories = null;
             $scope.isCreatingItem = false;
-            $scope.isEditingItem = true;
+
         }
 
-        function cancelEditingItem() {
-            $scope.isEditingItem = false;
-            $scope.editedItem = null;
+        $scope.resetCreateItemForm = resetCreateItemForm;
+
+        function resetCreateItemForm(){
+            $scope.createdItem = {
+                    name: '',
+                    price: null,
+                    category: null,
+                    description: '',
+                    store: $scope.currentStore.id,
+                    quantity: null,
+                    running_out_level: null
+                };
+        }
+
+        $scope.showCreateItemButton = showCreateItemButton;
+
+        $scope.showEditDeleteItemButtons = showEditDeleteItemButtons;
+
+        function showEditDeleteItemButtons(item){
+            return $scope.currentStore.id == item.store && $scope.userIsStaff();
+        }
+
+        function showCreateItemButton(){
+            return $scope.currentStore.id != 'master' && $scope.userIsStaff() && !$scope.createdItem;
+        }
+
+
+        $scope.createItem = createItem;
+
+        function createItem(item){
+            console.log(item);
+            ItemsFactory.createItem(item).then(function success(response){
+                $scope.setCurrentItem(response.data);
+                $scope.cancelCreatingItem();
+            }, handleServerError);
         }
 
         $scope.startEditingItem = startEditingItem;
+
+        $scope.setAllCategories = setAllCategories;
+
+        function setAllCategories(item){
+            CategoriesFactory.setAllCategories().then(function success(response){
+                $scope.allCategories = {
+                    availableOptions: response.data.data
+                };
+                //if (item){
+                //    for (var i = 0; i < $scope.allCategories.length; i++){
+                //        if (item.category == $scope.allCategories[i].id){
+                //            $scope.createItem.selectedOption = $scope.allCategories[i]
+                //        }
+                //    }
+                //}
+                //else{
+                //    $scope.createItem.selectedOption = null;
+                //}
+            }, handleServerError);
+        }
+
+        $scope.setEditedItem = setEditedItem;
+
+        function startEditingItem(item) {
+            if (!$scope.userIsStaff()){
+                alert("You need to be logged in as staff member to edit items!");
+            }
+            else if (!$scope.currentStore || $scope.currentStore.id != item.store){
+                alert("This item is not from this store!");
+            }
+            else{
+                $scope.itemsFieldState = "itemEdit";
+                $scope.setEditedItem(item);
+                $scope.setAllCategories(item);
+                $scope.isEditingItem = true;
+            }
+        }
+
+
+
+
         $scope.cancelEditingItem = cancelEditingItem;
-        $scope.shouldShowEditingItem = shouldShowEditingItem;
+
+        function cancelEditingItem(){
+            $scope.editedItem = null;
+            $scope.isEditingItem = false;
+            $scope.allCategories = null;
+        }
+
+        $scope.itemsFieldState = "";
+
+
+
         // =================================================================================================
 
         // STORES
@@ -428,10 +537,11 @@
         }
 
         function setCurrentStore(store){
+            $scope.cancelCreatingItem();
+            $scope.cancelEditingItem();
             $scope.currentStore = store;
             $scope.resetCategoriesData();
         }
-
 
         // CART
         // =======================================================================

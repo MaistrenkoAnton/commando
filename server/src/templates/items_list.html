@@ -3,11 +3,16 @@
 <p ng-show="itemsList.length == 0">No items to show</p>
 <div class="row" ng-show="itemsList.length > 0">
     <div ng-repeat="item in itemsList">
-
         <div class="thumbnail col-sm-4">
-            <img src="{% angularjs %}{{ item.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ item.name }}{% endangularjs %} image">
+            <img ng-src="{% angularjs %}{{ item.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ item.name }}{% endangularjs %} image">
             <div class="caption">
-                <h3 ng-bind="item.name"></h3>
+                <h3>
+                    {% angularjs %}{{ item.name }}{% endangularjs %}
+                    <span class="pull-right" ng-show="showEditDeleteItemButtons(item)">
+                        <a href="#" ng-click="startEditingItem(item)"><i class="fa fa-pencil">&nbsp;&nbsp;</i></a>
+                        <a href="#" ng-click="deleteItem(item)"><i class="fa fa-trash-o"></i></a>
+                    </span>
+                </h3>
                 <div ng-show="item.new_price ">
                         <p>
                             <strike>Price: {% angularjs %}{{ item.price }}{% endangularjs %}$</strike>
@@ -29,6 +34,5 @@
                 </p>
             </div>
         </div>
-
     </div>
 </div>

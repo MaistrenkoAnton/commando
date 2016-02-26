@@ -25,12 +25,11 @@
                 </li>
             </ul>
             <div>{% include "auth-form.html" %}</div>
-            {#            <div ng-include="'auth-form.html'"></div>#}
         </div><!--/.nav-collapse -->
     </div>
 </div>
 <div ng-hide="user" class="container-fluid">
     <div class="row">
-        <button class="btn btn-primary pull-right" id="form-link" ng-click="setForm()" ng-bind="sign_link"></button>
+        <button class="btn btn-primary pull-right top-right-coener" ng-click="setForm()" ng-bind="sign_link"></button>
     </div>
 </div>

@@ -1,5 +1,6 @@
 {% load djangular_tags %}
 <div class="row">
+    <div class="thumbnail">
         <h2><span ng-bind="currentItem.name"></span><a href="#" class="btn btn-success pull-right" role="button">Add to Cart</a></h2>
         <div ng-show="currentItem.stock.new_price" >
             <h3><span class="label label-default"><strike>Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</strike></span></h3>
@@ -11,7 +12,7 @@
             </h3>
         </div>
         <h3 ng-hide="currentItem.stock.new_price">Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</h3>
-        <img src="{% angularjs %}{{ currentItem.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ currentItem.name }}{% endangularjs %} image">
+        <img ng-src="{% angularjs %}{{ currentItem.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ currentItem.name }}{% endangularjs %} image">
         <div class="caption">
             <p>
                 <i ng-repeat="star in currentItem.stars track by $index"
@@ -21,18 +22,16 @@
             <h5><strong>Description:</strong></h5>
             <p ng-bind="currentItem.description"></p>
             <p class="row">
-                    <button class="btn btn-info" id="set_rate_button" ng-click="setRate(rateInput);">Set Rate</button>
-                    <label class="radio-inline" ng-repeat="number in [1, 2, 3, 4, 5]">
-                        <input type="radio" ng-model="$parent.rateInput"
-                               value="{% angularjs %}{{ number }}{% endangularjs %}"> {% angularjs %}{{ number }}{% endangularjs %}
-                    </label>
-                    <button class="btn btn-success pull-right" ng-click="setComment(commentInput);">Leave Comment</button>
+                <button class="btn btn-info" id="set_rate_button" ng-click="setRate(rateInput);">Set Rate</button>
+                <label class="radio-inline" ng-repeat="number in [1, 2, 3, 4, 5]">
+                    <input type="radio" ng-model="$parent.rateInput"
+                           value="{% angularjs %}{{ number }}{% endangularjs %}"> {% angularjs %}{{ number }}{% endangularjs %}
+                </label>
+                <button class="btn btn-success pull-right" ng-click="setComment(commentInput);">Leave Comment</button>
                 <br><br>
                 <textarea title="comment-input" class="form-control" rows="3" ng-model="commentInput"
                           placeholder="Write your comment here" required></textarea>
             </p>
-
-
-
         </div>
+    </div>
 </div>

@@ -3,7 +3,7 @@
     min-height: 0.25em;
     background-color: #b00602;;
 }
-#form-link{
+.top-right-coener{
     margin-right: 1em;
 }
 
@@ -28,4 +28,7 @@
 }
 #nav_store_name{
     color: #ffe272;
+}
+.fa-shopping-cart{
+    color: #d13f1d;
 }

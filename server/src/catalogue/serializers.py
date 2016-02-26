@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Category, Item, Comment, Rate
-from stores.serializers import StoreListSerializer
 from stock.serializers import StockListSerializer
 
 
