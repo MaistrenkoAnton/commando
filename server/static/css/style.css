@@ -3,32 +3,34 @@
     min-height: 0.25em;
     background-color: #b00602;;
 }
-.top-right-coener{
+.top-right-corner{
     margin-right: 1em;
 }
 
-#nav-username{
+.nav-username{
     color: #c6c6c6;
 }
 .errors, {
     font-weight: 900;
     color: #e9322d;
 }
-.fa-star, .fa-star-half-o, .fa-star-o{
+.rating-stars{
     color: #dab73c;
 }
 
-.comments_total{
+.comments-total{
     padding-left: 1.5em;
     color: #337ab7;
 }
-
-#set_rate_button{
+.set-rate-button{
     margin-right: 5em;
-}
-#nav_store_name{
-    color: #ffe272;
 }
 .fa-shopping-cart{
     color: #d13f1d;
+}
+.item-detail-delete-edit-buttons{
+    margin-left: 3em;
+}
+.running-out, .delete-from-cart{
+    color: #e50605;
 }
