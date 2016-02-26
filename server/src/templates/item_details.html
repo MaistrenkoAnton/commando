@@ -3,7 +3,7 @@
     <div class="thumbnail">
         <h2>
             <span ng-bind="currentItem.name"></span>
-            <span id="itemDetailDeleteEditButtons" ng-show="showEditDeleteItemButtons()">
+            <span class="item-detail-delete-edit-buttons" ng-show="showEditDeleteItemButtons()">
                 <a href="#" ng-click="startEditingItem(currentItem)"><i class="fa fa-pencil">&nbsp;&nbsp;</i></a>
                 <a href="#" ng-click="deleteItem(currentItem)"><i class="fa fa-trash-o"></i></a>
             </span>
@@ -31,7 +31,7 @@
             <h5><strong>Description:</strong></h5>
             <p ng-bind="currentItem.description"></p>
             <p class="row">
-                <button class="btn btn-info" id="set_rate_button" ng-click="setRate(rateInput);">Set Rate</button>
+                <button class="btn btn-info set-rate-button" ng-click="setRate(rateInput);">Set Rate</button>
                 <label class="radio-inline" ng-repeat="number in [1, 2, 3, 4, 5]">
                     <input type="radio" ng-model="$parent.rateInput"
                            value="{% angularjs %}{{ number }}{% endangularjs %}"> {% angularjs %}{{ number }}{% endangularjs %}

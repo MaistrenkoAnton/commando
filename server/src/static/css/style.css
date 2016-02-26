@@ -7,7 +7,7 @@
     margin-right: 1em;
 }
 
-#nav-username{
+.nav-username{
     color: #c6c6c6;
 }
 .errors, {
@@ -22,17 +22,13 @@
     padding-left: 1.5em;
     color: #337ab7;
 }
-
-#set_rate_button{
+.set-rate-button{
     margin-right: 5em;
-}
-#nav_store_name{
-    color: #ffe272;
 }
 .fa-shopping-cart{
     color: #d13f1d;
 }
-#itemDetailDeleteEditButtons{
+.item-detail-delete-edit-buttons{
     margin-left: 3em;
 }
 .running-out{
