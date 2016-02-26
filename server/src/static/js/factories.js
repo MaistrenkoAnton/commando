@@ -271,14 +271,13 @@
             var data = {
                 name: item.name,
                 price: item.price,
-                category: item.category.cat_id,
+                category: item.category,
                 description: item.description,
                 //image_url: "",
                 store: item.store,
                 quantity: item.quantity,
                 running_out_level: item.running_out_level
             };
-            console.log(data);
             return $http.post(url, data)
                 .then(function success(response){
                     return response;

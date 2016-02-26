@@ -10,7 +10,7 @@
     </div>
     <div class="form-group">
         <label for="editedItemCategory">Category:</label><br>
-        <select id="createdItemCategory" ng-options="category.cat_id as category.name for category in allCategories.availableOptions track by category.id"
+        <select id="editedItemCategory" ng-options="category.cat_id as category.name for category in allCategories.availableOptions track by category.cat_id"
                 ng-model="editedItem.category" class="form-control" required></select>
     </div>
     <div class="form-group">
