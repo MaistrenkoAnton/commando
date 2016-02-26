@@ -55,6 +55,9 @@
                     $scope.user.canSetRate = checkRateAlreadySet($scope.user.id, $scope.currentItem.id);
                 }
                 $scope.user.canSetRate = true;
+                if ($scope.cart){
+                    $scope.cart = null;
+                }
             }, handleServerError);
 
         }
@@ -62,6 +65,7 @@
         function logout(){
             UserFactory.logout();
             $scope.user = null;
+            $scope.cart = null;
         }
 
         function register(username, password){
@@ -502,42 +506,86 @@
 
         // CART
         // =======================================================================
+        $scope.cart = null;
         $scope.addToCart = addToCart;
         $scope.showCart = showCart;
         $scope.canShowCartButton = canShowCartButton;
+        $scope.removeFromCart = removeFromCart;
+        $scope.purchase = purchase;
 
         function canShowCartButton(){
             return $scope.user && $scope.currentStore.id != 'master' && $scope.itemsFieldState != 'cart';
         }
 
-        function addToCart(){
-            CartFactory.addToCart().then(function success(response){
+        function addToCart(item){
+            var itemId = (item.id ? item.id : item.item_id);
+            var itemAdded = false;
+            if (!$scope.user){
+                alert("You need to be logged in to add items to cart!");
+            }
+            else if (!$scope.cart){
+                $scope.cart = {
+                    user: $scope.user.id,
+                    items: [
+                        {
+                            checked: true,
+                            name: item.name,
+                            id: itemId,
+                            quantity: 1
+                        }
+                    ]
+                };
+            }
+            else{
+                for (var i = 0; i < $scope.cart.items.length; i++){
+                    if (itemId === $scope.cart.items[i].id){
+                        $scope.cart.items[i].quantity ++;
+                        itemAdded = true;
+                        break;
+                    }
+                }
+                if (!itemAdded){
+                    $scope.cart.items.push({
+                        checked: true,
+                        name: item.name,
+                        id: itemId,
+                        quantity: 1
+                    });
+                }
+            }
+        }
 
-            }, handleServerError);
+        function removeFromCart(item, cart){
+            var itemIndex = $scope.cart.items.indexOf(item);
+            cart.items.splice(itemIndex, 1);
         }
 
         function showCart(){
-            var data = {
-                user: $scope.user.id,
-                items: [
-                    {
-                        id: 12,
-                        quantity: 15
-                    },
-                    {
-                        id: 7,
-                        quantity: 2
-                    },
-                    {
-                        id: 3,
-                        quantity: 1
-                    }
-                ]
-            };
-            CartFactory.purchase(data).then(function success(response){
-                $scope.itemsFieldState = 'cart'
-            }, handleServerError);
-            //$scope.itemsFieldState = 'cart'
+            $scope.stateBeforeCart = $scope.itemsFieldState;
+            $scope.itemsFieldState = 'cart'
+        }
+
+        function purchase(cart){
+            var itemsToRemove = [];
+            for (var i = 0; i < cart.items.length; i++){
+                if (cart.items[i].checked != true || cart.items[i].quantity === 0){
+                    itemsToRemove.push($scope.cart.items[i])
+                }
+                else{
+                    delete cart.items[i].checked;
+                    delete cart.items[i].name;
+                }
+            }
+            for (i = 0; i < itemsToRemove.length; i++){
+                $scope.removeFromCart(itemsToRemove[i], cart);
+            }
+            console.log(cart);
+            CartFactory.purchase(cart).then(function success(response){
+                alert("Purchase sucessful!");
+                $scope.cart = null;
+                $scope.itemsFieldState = $scope.stateBeforeCart;
+                $scope.stateBeforeCart = null;
+            })
         }
 
 

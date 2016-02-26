@@ -274,23 +274,14 @@
     app.factory('CartFactory', function CartFactory($http, djangoUrl) {
         'use strict';
         return {
-            addToCart: addToCart,
             purchase: purchase
         };
-
-        function addToCart(){
-            var url = djangoUrl.reverse('catalogue:item_detail', [item.item_id]);
-            return $http.get(url)
-                .then(successCallbackHandler)
-        }
 
         function purchase(data){
             var url = djangoUrl.reverse('cart:add_item_in_cart');
             return $http.post(url, data)
                 .then(successCallbackHandler)
         }
-
-
     });
 
 })();

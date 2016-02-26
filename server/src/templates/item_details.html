@@ -7,7 +7,7 @@
                 <a href="#" ng-click="startEditingItem(currentItem)"><i class="fa fa-pencil">&nbsp;&nbsp;</i></a>
                 <a href="#" ng-click="deleteItem(currentItem)"><i class="fa fa-trash-o"></i></a>
             </span>
-            <a href="#" class="btn btn-success pull-right" role="button">Add to Cart</a>
+            <a href="#" class="btn btn-success pull-right" role="button" ng-click="addToCart(currentItem);">Add to Cart</a>
         </h2>
         <div ng-show="currentItem.stock.new_price" >
             <h3><span class="label label-default"><strike>Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</strike></span></h3>

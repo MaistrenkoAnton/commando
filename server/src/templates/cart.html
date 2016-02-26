@@ -9,6 +9,9 @@
         <span class="input-group-addon">
             <input title="itemInCartQuantity" type="number" min="0" ng-model="item.quantity">
         </span>
+        <span class="input-group-addon">
+            <a href="#" ng-click="removeFromCart(item, cart)"><i class="fa fa-minus delete-from-cart"></i></a>
+        </span>
     </div><!-- /input-group -->
-
+    <button type="submit" class="btn btn-block btn-primary">Purchase</button>
 </form>

@@ -31,6 +31,6 @@
 .item-detail-delete-edit-buttons{
     margin-left: 3em;
 }
-.running-out{
+.running-out, .delete-from-cart{
     color: #e50605;
 }

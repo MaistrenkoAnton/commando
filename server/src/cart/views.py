@@ -1,13 +1,18 @@
-from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework import views
+from rest_framework import status
 from .models import Cart
-from .serializers import CartAddSerializer
+from catalogue.models import Item
+from django.contrib.auth.models import User
 
 
-class CartAddView(generics.CreateAPIView):
-    queryset = Cart.objects.all()
-    serializer_class = CartAddSerializer
+class CartAddView(views.APIView):
 
-    def post(self, request, *args, **kwargs):
-        print request.data
-        pass
+    def post(self, request):
+        user = User.objects.get(pk=request.data.get('user'))
 
+        for key in request.data.get('items'):
+            item = Item.objects.get(pk=key.get('id'))
+            purchase = Cart(user=user, item=item, quantity=key.get('quantity'))
+            purchase.save()
+        return Response(status=status.HTTP_200_OK)
