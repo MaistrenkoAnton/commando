@@ -32,3 +32,9 @@
 .fa-shopping-cart{
     color: #d13f1d;
 }
+#itemDetailDeleteEditButtons{
+    margin-left: 3em;
+}
+.running-out{
+    color: #e50605;
+}

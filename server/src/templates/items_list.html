@@ -8,9 +8,9 @@
             <div class="caption">
                 <h3>
                     {% angularjs %}{{ item.name }}{% endangularjs %}
-                    <span class="pull-right" ng-show="showEditDeleteItemButtons(item)">
-                        <a href="#" ng-click="startEditingItem(item)"><i class="fa fa-pencil">&nbsp;&nbsp;</i></a>
-                        <a href="#" ng-click="deleteItem(item)"><i class="fa fa-trash-o"></i></a>
+                    <span class="pull-right" ng-show="showEditDeleteItemButtons();">
+                        <a href="#" ng-click="startEditingItem(item);"><i class="fa fa-pencil">&nbsp;&nbsp;</i></a>
+                        <a href="#" ng-click="deleteItem(item);"><i class="fa fa-trash-o"></i></a>
                     </span>
                 </h3>
                 <div ng-show="item.new_price ">

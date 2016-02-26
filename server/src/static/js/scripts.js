@@ -86,29 +86,14 @@
 
         $scope.alreadySetRate = false;
         $scope.checkRateAlreadySet = checkRateAlreadySet;
-
-        function canSetRate(){
-            if (!$scope.user){
-                return [false, "You need to be logged in to set rate."]
-            }
-            else{
-                checkRateAlreadySet();
-                if ($scope.alreadySetRate){
-                    return [false, "You've already set rate to this item"];
-                }
-                else{
-                    return [true];
-                }
-            }
-        }
+        $scope.setRate = setRate;
+        $scope.setComment = setComment;
 
         function checkRateAlreadySet(userId, itemId){
             RateFactory.checkRateAlreadySet(userId, itemId).then(function success(response){
                 return Boolean(response.data);
             }, handleServerError);
         }
-
-        $scope.setRate = setRate;
 
         function setRate(rateInput){
             if (!$scope.user){
@@ -127,8 +112,6 @@
                     }, handleServerError);
             }
         }
-
-        $scope.setComment = setComment;
 
         function setComment(commentInput){
             if (!$scope.user){
@@ -151,47 +134,34 @@
         // CATEGORIES AND ITEMS BLOCK
         // =================================================================================================
 
-        // items and categories data initials
         $scope.itemsList = [];
         $scope.categoriesList = [];
         $scope.parentCategoriesList = [];
         $scope.currentCategory = null;
         $scope.currentItem = null;
         $scope.detailItem = null;
-
-
-        // items ang categories states
-        $scope.isCreatingItem = false;
-        $scope.isEditingItem = false;
         $scope.isCurrentCategory = null;
         $scope.isCurrentItem = null;
-        $scope.editedItem = null;
-
+        $scope.canShowActiveCategory = false;
+        $scope.itemsFieldState = null;
 
         $scope.isCurrentCategory = isCurrentCategory;
         $scope.isCurrentItem = isCurrentItem;
         $scope.setCurrentCategory = setCurrentCategory;
         $scope.setCategoryBack = setCategoryBack;
-
         $scope.noParentCategories = noParentCategories;
-        $scope.canShowActiveCategory = false;
         $scope.parentCategoryActive = parentCategoryActive;
         $scope.noItems = noItems;
         $scope.setCurrentItem = setCurrentItem;
         $scope.resetItemData = resetItemData;
         $scope.resetCategoriesData = resetCategoriesData;
-
         $scope.getCategoriesList = getCategoriesList;
         $scope.getItemsList = getItemsList;
         $scope.getItemDetails = getItemDetails;
 
-        $scope.editItem = editItem;
-        $scope.deleteItem = deleteItem;
-
         function noParentCategories(){
             return $scope.parentCategoriesList.length == 0;
         }
-
 
         function parentCategoryActive(category){
             return $scope.parentCategoriesList.length > 0 && category == $scope.parentCategoriesList[-1];
@@ -260,7 +230,6 @@
                         }
                     );
                 }
-
             }, handleServerError);
         }
 
@@ -326,34 +295,6 @@
             $scope.resetItemData();
         }
 
-        function deleteItem(item){
-            if ($scope.userIsStaff()){
-                var itemId = null;
-                if (item.id){
-                    itemId = item.id;
-                }
-                else{
-                    itemId = item.item_id;
-                }
-                ItemsFactory.deleteItem(itemId).then(function success(response){
-                    $scope.setCurrentCategory($scope.currentCategory);
-                })
-            }
-            else{
-                alert("You need to be logged in as staff member to delete items!");
-            }
-
-        }
-
-
-        function editItem(item){
-            ItemsFactory.editItem(item).then(function success(response){
-                $scope.setCurrentItem(response.data);
-                $scope.isEditingItem = false;
-                $scope.editedItem = null;
-            });
-        }
-
         function resetItemData(){
             $scope.itemsList = [];
             $scope.currentItem = null;
@@ -367,17 +308,58 @@
             if ($scope.newItem) {$scope.newItem = null;}
         }
 
+        // ITEMS CRUD BLOCK
+        // =================================================================================================
+
+        // Edit
+        $scope.editedItem = null;
+        $scope.isEditingItem = false;
+        $scope.startEditingItem = startEditingItem;
+        $scope.cancelEditingItem = cancelEditingItem;
+        $scope.setEditedItem = setEditedItem;
+        $scope.editItem = editItem;
+
+        function editItem(item){
+            if (typeof item.category == 'object'){
+                item.category = item.category.cat_id;
+            }
+            ItemsFactory.editItem(item).then(function success(response){
+                $scope.setCurrentItem(response.data);
+                $scope.isEditingItem = false;
+                $scope.editedItem = null;
+            });
+        }
+
         function setEditedItem(item) {
             $scope.editedItem = angular.copy(item);
         }
 
-        function isSelectedItem(item) {
-            return $scope.editedItem !== null && $scope.editedItem.id === item.id;
+        function startEditingItem(item) {
+            if (!$scope.userIsStaff()){
+                alert("You need to be logged in as staff member to edit items!");
+            }
+            else if (!$scope.currentStore || $scope.currentStore.id != item.store){
+                alert("This item is not from this store!");
+            }
+            else{
+                $scope.itemsFieldState = "itemEdit";
+                $scope.setEditedItem(item);
+                $scope.setAllCategories(item);
+                $scope.isEditingItem = true;
+            }
         }
 
-        $scope.setEditedBookmark = setEditedItem;
-        $scope.isSelectedBookmark = isSelectedItem;
+        function cancelEditingItem(){
+            $scope.editedItem = null;
+            $scope.isEditingItem = false;
+            $scope.allCategories = null;
+        }
 
+        // Create
+        $scope.isCreatingItem = false;
+        $scope.createItem = createItem;
+        $scope.resetCreateItemForm = resetCreateItemForm;
+        $scope.cancelCreatingItem = cancelCreatingItem;
         $scope.startCreatingItem = startCreatingItem;
 
         function startCreatingItem() {
@@ -401,9 +383,8 @@
                 $scope.isCreatingItem = true;
                 $scope.setAllCategories();
             }
-        }
 
-        $scope.cancelCreatingItem = cancelCreatingItem;
+        }
 
         function cancelCreatingItem(){
             $scope.createdItem = null;
@@ -412,97 +393,77 @@
 
         }
 
-        $scope.resetCreateItemForm = resetCreateItemForm;
-
         function resetCreateItemForm(){
             $scope.createdItem = {
-                    name: '',
-                    price: null,
-                    category: null,
-                    description: '',
-                    store: $scope.currentStore.id,
-                    quantity: null,
-                    running_out_level: null
-                };
+                name: '',
+                price: null,
+                category: null,
+                description: '',
+                store: $scope.currentStore.id,
+                quantity: null,
+                running_out_level: null
+            };
         }
-
-        $scope.showCreateItemButton = showCreateItemButton;
-
-        $scope.showEditDeleteItemButtons = showEditDeleteItemButtons;
-
-        function showEditDeleteItemButtons(item){
-            return $scope.currentStore.id == item.store && $scope.userIsStaff();
-        }
-
-        function showCreateItemButton(){
-            return $scope.currentStore.id != 'master' && $scope.userIsStaff() && !$scope.createdItem;
-        }
-
-
-        $scope.createItem = createItem;
 
         function createItem(item){
-            console.log(item);
             ItemsFactory.createItem(item).then(function success(response){
                 $scope.setCurrentItem(response.data);
                 $scope.cancelCreatingItem();
             }, handleServerError);
         }
 
-        $scope.startEditingItem = startEditingItem;
+        // Delete
+        $scope.deleteItem = deleteItem;
 
+        function deleteItem(item){
+            if ($scope.userIsStaff()){
+                var itemId = null;
+                if (item.id){
+                    itemId = item.id;
+                }
+                else{
+                    itemId = item.item_id;
+                }
+                ItemsFactory.deleteItem(itemId).then(function success(response){
+                    $scope.setCurrentCategory($scope.currentCategory);
+                })
+            }
+            else{
+                alert("You need to be logged in as staff member to delete items!");
+            }
+        }
+
+        // utility
         $scope.setAllCategories = setAllCategories;
+        $scope.showCreateItemButton = showCreateItemButton;
+        $scope.showEditDeleteItemButtons = showEditDeleteItemButtons;
+
+        function showEditDeleteItemButtons(){
+            return $scope.currentStore.id != 'master' && $scope.userIsStaff();
+        }
+
+        function showCreateItemButton(){
+            return $scope.currentStore.id != 'master' && $scope.userIsStaff() && !$scope.createdItem && !$scope.editedItem;
+        }
 
         function setAllCategories(item){
             CategoriesFactory.setAllCategories().then(function success(response){
                 $scope.allCategories = {
                     availableOptions: response.data.data
                 };
-                //if (item){
-                //    for (var i = 0; i < $scope.allCategories.length; i++){
-                //        if (item.category == $scope.allCategories[i].id){
-                //            $scope.createItem.selectedOption = $scope.allCategories[i]
-                //        }
-                //    }
-                //}
-                //else{
-                //    $scope.createItem.selectedOption = null;
-                //}
+                if (item){
+                    for (var i = 0; i < $scope.allCategories.availableOptions.length; i++){
+                        if (item.category == $scope.allCategories.availableOptions[i].cat_id ||
+                            item.category.id == $scope.allCategories.availableOptions[i].cat_id){
+                            $scope.editedItem.category = $scope.allCategories.availableOptions[i];
+                        }
+                    }
+                }
+                else{
+                    $scope.createItem.selectedOption = null;
+                }
             }, handleServerError);
         }
-
-        $scope.setEditedItem = setEditedItem;
-
-        function startEditingItem(item) {
-            if (!$scope.userIsStaff()){
-                alert("You need to be logged in as staff member to edit items!");
-            }
-            else if (!$scope.currentStore || $scope.currentStore.id != item.store){
-                alert("This item is not from this store!");
-            }
-            else{
-                $scope.itemsFieldState = "itemEdit";
-                $scope.setEditedItem(item);
-                $scope.setAllCategories(item);
-                $scope.isEditingItem = true;
-            }
-        }
-
-
-
-
-        $scope.cancelEditingItem = cancelEditingItem;
-
-        function cancelEditingItem(){
-            $scope.editedItem = null;
-            $scope.isEditingItem = false;
-            $scope.allCategories = null;
-        }
-
-        $scope.itemsFieldState = "";
-
-
-
         // =================================================================================================
 
         // STORES
@@ -554,7 +515,6 @@
         }
 
         // =======================================================================
-
 
     });
 })();

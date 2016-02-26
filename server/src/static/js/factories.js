@@ -129,8 +129,8 @@
         function setRate(rateInput, itemId, userId){
             var url = djangoUrl.reverse('catalogue:set_rate');
             var data = {rate: rateInput,
-                        item: itemId,
-                        user: userId};
+                item: itemId,
+                user: userId};
             return $http.post(url, data)
                 .then(function success(response){
                     return response;
@@ -226,7 +226,14 @@
         }
 
         function getItemDetails(item){
-            var url = djangoUrl.reverse('catalogue:item_detail', [item.item_id]);
+            var itemId = null;
+            if (item.id){
+                itemId = item.id;
+            }
+            else{
+                itemId = item.item_id;
+            }
+            var url = djangoUrl.reverse('catalogue:item_detail', [itemId]);
             return $http.get(url)
                 .then(function success(response){
                     return response;
@@ -282,7 +289,6 @@
                 .then(function success(response){
                     return response;
                 })
-
         }
     });
 
@@ -299,7 +305,6 @@
                     return response;
                 })
         }
-
     });
 
 })();

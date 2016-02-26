@@ -1,7 +1,14 @@
 {% load djangular_tags %}
 <div class="row">
     <div class="thumbnail">
-        <h2><span ng-bind="currentItem.name"></span><a href="#" class="btn btn-success pull-right" role="button">Add to Cart</a></h2>
+        <h2>
+            <span ng-bind="currentItem.name"></span>
+            <span id="itemDetailDeleteEditButtons" ng-show="showEditDeleteItemButtons()">
+                <a href="#" ng-click="startEditingItem(currentItem)"><i class="fa fa-pencil">&nbsp;&nbsp;</i></a>
+                <a href="#" ng-click="deleteItem(currentItem)"><i class="fa fa-trash-o"></i></a>
+            </span>
+            <a href="#" class="btn btn-success pull-right" role="button">Add to Cart</a>
+        </h2>
         <div ng-show="currentItem.stock.new_price" >
             <h3><span class="label label-default"><strike>Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</strike></span></h3>
             <h3>
@@ -13,6 +20,8 @@
         </div>
         <h3 ng-hide="currentItem.stock.new_price">Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</h3>
         <img ng-src="{% angularjs %}{{ currentItem.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ currentItem.name }}{% endangularjs %} image">
+        <p>Quantity: {% angularjs %}{{ currentItem.quantity }}{% endangularjs %}</p>
+        <p class="running-out" ng-show="currentItem.running_out">Running out of stock!</p>
         <div class="caption">
             <p>
                 <i ng-repeat="star in currentItem.stars track by $index"
