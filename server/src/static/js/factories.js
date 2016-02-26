@@ -2,6 +2,10 @@
     'use strict';
     var app = angular.module('factories', ['angular-jwt']);
 
+    function successCallbackHandler(response){
+            return response;
+        }
+
     app.factory('UserFactory', function UserFactory($http, $q, AuthTokenFactory, djangoUrl){
         'use strict';
         return {
@@ -12,13 +16,15 @@
             register: register
         };
 
+        function authSuccessCallbackHandler(response){
+            AuthTokenFactory.setToken(response.data.token);
+            return response;
+        }
+
         function login(username, password){
             var url = djangoUrl.reverse('auth:login');
             return $http.post(url, {username: username, password: password})
-                .then(function success(response){
-                    AuthTokenFactory.setToken(response.data.token);
-                    return response;
-                })
+                .then(authSuccessCallbackHandler)
         }
 
         function logout(){
@@ -113,9 +119,7 @@
                 user: userId,
                 author: username};
             return $http.post(url, data)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
     });
 
@@ -132,17 +136,13 @@
                 item: itemId,
                 user: userId};
             return $http.post(url, data)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
 
         function checkRateAlreadySet(userId, itemId){
             var url = djangoUrl.reverse('catalogue:check_rate_set', [userId, itemId]);
             return $http.get(url)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
     });
 
@@ -156,17 +156,13 @@
         function getStoresList(){
             var url = djangoUrl.reverse('stores:store_list');
             return $http.get(url)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
 
         function getStore(storeId){
             var url = djangoUrl.reverse('stores:account_store', [storeId]);
             return $http.get(url)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
     });
 
@@ -183,17 +179,13 @@
                 url = djangoUrl.reverse('catalogue:category_list', [parentCategory.cat_id])
             }
             return $http.get(url)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
 
         function setAllCategories(){
             var url = djangoUrl.reverse('catalogue:all_categories_list');
             return $http.get(url)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
     });
 
@@ -217,9 +209,7 @@
             }
 
             return $http.get(url)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
 
         function getItemDetails(item){
@@ -232,17 +222,13 @@
             }
             var url = djangoUrl.reverse('catalogue:item_detail', [itemId]);
             return $http.get(url)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
 
         function deleteItem(itemId){
             var url = djangoUrl.reverse('stores:update_delete_item', [itemId]);
             return $http.delete(url)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
 
         function editItem(item){
@@ -265,9 +251,7 @@
                 running_out_level: item.running_out_level
             };
             return $http.put(url, data)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
 
         function createItem(item){
@@ -283,9 +267,7 @@
                 running_out_level: item.running_out_level
             };
             return $http.post(url, data)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
     });
 
@@ -299,17 +281,13 @@
         function addToCart(){
             var url = djangoUrl.reverse('catalogue:item_detail', [item.item_id]);
             return $http.get(url)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
 
         function purchase(data){
             var url = djangoUrl.reverse('cart:add_item_in_cart');
             return $http.post(url, data)
-                .then(function success(response){
-                    return response;
-                })
+                .then(successCallbackHandler)
         }
 
 

@@ -29,7 +29,7 @@
         }
 
         function userIsStaff(){
-            return ($scope.user && $scope.user.is_staff == true) ? true: false;
+            return ($scope.user && $scope.user.is_staff === true) ? true: false;
         }
 
         $scope.signInForm = true;
@@ -49,6 +49,7 @@
 
         function login(username, password){
             UserFactory.login(username, password).then(function success(response){
+                console.log(response);
                 $scope.user = response.data.user;
                 if ($scope.currentItem){
                     $scope.user.canSetRate = checkRateAlreadySet($scope.user.id, $scope.currentItem.id);
@@ -121,11 +122,6 @@
                 CommentFactory.setComment(commentInput, $scope.currentItem.id, $scope.user.id, $scope.user.username)
                     .then(function success(response){
                         $scope.currentItem.comments_total = response.data.comments_total;
-                        for (var i = 0; i < $scope.itemsList.length; i++){
-                            if ($scope.itemsList[i].id == $scope.currentItem.id){
-                                $scope.itemsList[i].comments_total = $scope.currentItem.comments_total
-                            }
-                        }
                         $scope.commentInput = null;
                     }, handleServerError);
             }
@@ -160,19 +156,19 @@
         $scope.getItemDetails = getItemDetails;
 
         function noParentCategories(){
-            return $scope.parentCategoriesList.length == 0;
+            return $scope.parentCategoriesList.length === 0;
         }
 
         function parentCategoryActive(category){
-            return $scope.parentCategoriesList.length > 0 && category == $scope.parentCategoriesList[-1];
+            return $scope.parentCategoriesList.length > 0 && category === $scope.parentCategoriesList[-1];
         }
 
         function isCurrentCategory(category) {
-            return $scope.currentCategory && category.name == $scope.currentCategory.name && $scope.canShowActiveCategory == true;
+            return $scope.currentCategory && category.name === $scope.currentCategory.name && $scope.canShowActiveCategory === true;
         }
 
         function isCurrentItem(item) {
-            return $scope.currentItem && item.name == $scope.currentItem.name;
+            return $scope.currentItem && item.name === $scope.currentItem.name;
         }
 
         function noItems(){
@@ -223,7 +219,7 @@
                         function(item)
                         {
                             for (var i = 0; i < $scope.categoriesList.length; i++){
-                                if ($scope.categoriesList[i].cat_id == item[0]){
+                                if ($scope.categoriesList[i].cat_id === parseInt(item[0])){
                                     $scope.categoriesList[i].facet = item[1];
                                 }
                             }
@@ -248,7 +244,7 @@
                 if (fullStars >= i+1){
                     starsArray.push("full");
                 }
-                else if( ((i == 0) || (starsArray[i-1] == "full")) && delta){
+                else if( ((i === 0) || (starsArray[i-1] === "full")) && delta){
                     starsArray.push("half");
                 }
                 else{
@@ -320,7 +316,7 @@
         $scope.editItem = editItem;
 
         function editItem(item){
-            if (typeof item.category == 'object'){
+            if (typeof item.category === 'object'){
                 item.category = item.category.cat_id;
             }
             ItemsFactory.editItem(item).then(function success(response){
@@ -366,7 +362,7 @@
             if (!$scope.userIsStaff()){
                 alert("You need to be logged in as staff member to edit items!");
             }
-            else if ($scope.currentStore.id == 'master'){
+            else if ($scope.currentStore.id === 'master'){
                 alert("You can not create items from Master store!");
             }
             else{
@@ -453,8 +449,8 @@
                 };
                 if (item){
                     for (var i = 0; i < $scope.allCategories.availableOptions.length; i++){
-                        if (item.category == $scope.allCategories.availableOptions[i].cat_id ||
-                            item.category.id == $scope.allCategories.availableOptions[i].cat_id){
+                        if (item.category === $scope.allCategories.availableOptions[i].cat_id ||
+                            item.category.id === $scope.allCategories.availableOptions[i].cat_id){
                             $scope.editedItem.category = $scope.allCategories.availableOptions[i];
                         }
                     }
