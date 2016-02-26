@@ -25,8 +25,8 @@
         <div class="caption">
             <p>
                 <i ng-repeat="star in currentItem.stars track by $index"
-                   ng-class="star == 'full' ? 'fa fa-star ' : (star == 'half' ? 'fa fa-star-half-o' : 'fa fa-star-o')"></i>
-                <span class="comments_total">Comments: {% angularjs %}{{ currentItem.comments_total }}{% endangularjs %}</span>
+                   ng-class="star == 'full' ? 'fa fa-star rating-stars' : (star == 'half' ? 'fa fa-star-half-o rating-stars' : 'fa fa-star-o rating-stars')"></i>
+                <span class="comments-total">Comments: {% angularjs %}{{ currentItem.comments_total }}{% endangularjs %}</span>
             </p>
             <h5><strong>Description:</strong></h5>
             <p ng-bind="currentItem.description"></p>

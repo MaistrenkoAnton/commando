@@ -178,12 +178,9 @@
         };
 
         function getCategoriesList(parentCategory){
-            var url = '';
+            var url = djangoUrl.reverse('catalogue:category_list_root');
             if (parentCategory){
                 url = djangoUrl.reverse('catalogue:category_list', [parentCategory.cat_id])
-            }
-            else {
-                url = djangoUrl.reverse('catalogue:category_list_root')
             }
             return $http.get(url)
                 .then(function success(response){
@@ -212,7 +209,7 @@
 
         function getItemsList(category, store){
             var url = "";
-            if (store.id == "master"){
+            if (store.id === "master"){
                 url = djangoUrl.reverse('catalogue:item_list', [category.cat_id]);
             }
             else{
@@ -295,7 +292,8 @@
     app.factory('CartFactory', function CartFactory($http, djangoUrl) {
         'use strict';
         return {
-            addToCart: addToCart
+            addToCart: addToCart,
+            purchase: purchase
         };
 
         function addToCart(){
@@ -305,6 +303,16 @@
                     return response;
                 })
         }
+
+        function purchase(data){
+            var url = djangoUrl.reverse('cart:add_item_in_cart');
+            return $http.post(url, data)
+                .then(function success(response){
+                    return response;
+                })
+        }
+
+
     });
 
 })();

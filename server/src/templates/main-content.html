@@ -3,7 +3,7 @@
 {% block content %}
     <div ng-show="user" class="container-fluid">
         <div class="row">
-            <a href="#" class="pull-right top-right-coener"><i class="fa fa-shopping-cart fa-5x"></i></a>
+            <a href="#" class="pull-right top-right-corner" ng-show="canShowCartButton();" ng-click="showCart();"><i class="fa fa-shopping-cart fa-5x"></i></a>
         </div>
     </div>
     <div class="container">
@@ -26,6 +26,9 @@
         </div>
         <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemEdit'">
             {% include 'item-edit-form.html' %}
+        </div>
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'cart'">
+            {% include 'cart.html' %}
         </div>
     </div>
 {% endblock content %}

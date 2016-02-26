@@ -29,7 +29,7 @@
         }
 
         function userIsStaff(){
-            return ($scope.user && $scope.user.is_staff === true) ? true: false;
+            return ($scope.user && $scope.user.is_staff == true) ? true: false;
         }
 
         $scope.signInForm = true;
@@ -168,11 +168,11 @@
         }
 
         function isCurrentCategory(category) {
-            return $scope.currentCategory && category.name === $scope.currentCategory.name && $scope.canShowActiveCategory == true;
+            return $scope.currentCategory && category.name == $scope.currentCategory.name && $scope.canShowActiveCategory == true;
         }
 
         function isCurrentItem(item) {
-            return $scope.currentItem && item.name === $scope.currentItem.name;
+            return $scope.currentItem && item.name == $scope.currentItem.name;
         }
 
         function noItems(){
@@ -507,6 +507,12 @@
         // CART
         // =======================================================================
         $scope.addToCart = addToCart;
+        $scope.showCart = showCart;
+        $scope.canShowCartButton = canShowCartButton;
+
+        function canShowCartButton(){
+            return $scope.user && $scope.currentStore.id != 'master' && $scope.itemsFieldState != 'cart';
+        }
 
         function addToCart(){
             CartFactory.addToCart().then(function success(response){
@@ -514,7 +520,63 @@
             }, handleServerError);
         }
 
+        function showCart(){
+            var data = {
+                user: $scope.user.id,
+                items: [
+                    {
+                        id: 12,
+                        quantity: 15
+                    },
+                    {
+                        id: 7,
+                        quantity: 2
+                    },
+                    {
+                        id: 3,
+                        quantity: 1
+                    }
+                ]
+            };
+            CartFactory.purchase(data).then(function success(response){
+                $scope.itemsFieldState = 'cart'
+            }, handleServerError);
+            //$scope.itemsFieldState = 'cart'
+        }
+
+
+
         // =======================================================================
 
     });
 })();
+
+
+
+//data = {
+//    user: userID,
+//    items: [
+//        {
+//            item: itemID,
+//            qty: qty
+//        },
+//        {
+//            item: itemID,
+//            qty: qty
+//        },
+//        {
+//            item: itemID,
+//            qty: qty
+//        },
+//        {
+//            item: itemID,
+//            qty: qty
+//        },
+//        {
+//            item: itemID,
+//            qty: qty
+//        }
+//    ]
+//};
+//
+//$http.post(url, data);

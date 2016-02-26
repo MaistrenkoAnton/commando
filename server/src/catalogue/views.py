@@ -146,7 +146,6 @@ class SetRateView(generics.CreateAPIView):
         response_data = {
             "average_rate": Item.objects.get(pk=serializer.data['item']).average_rate
         }
-        print request.data
         return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
 
 

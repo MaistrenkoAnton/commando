@@ -25,8 +25,8 @@
                 <p ng-hide="item.new_price">Price: {% angularjs %}{{ item.price }}{% endangularjs %}$</p>
                 <p>
                     <i ng-repeat="star in item.stars track by $index"
-                       ng-class="star == 'full' ? 'fa fa-star ' : (star == 'half' ? 'fa fa-star-half-o' : 'fa fa-star-o')"></i>
-                    <span class="comments_total">Comments: {% angularjs %}{{ item.comments_total }}{% endangularjs %}</span>
+                       ng-class="star == 'full' ? 'fa fa-star rating-stars' : (star == 'half' ? 'fa fa-star-half-o rating-stars' : 'fa fa-star-o rating-stars')"></i>
+                    <span class="comments-total">Comments: {% angularjs %}{{ item.comments_total }}{% endangularjs %}</span>
                 </p>
                 <p>
                     <a href="#" class="btn btn-success" role="button" ng-click="addToCart(item);">Add to cart</a>
