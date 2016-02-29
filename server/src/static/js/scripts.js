@@ -382,7 +382,6 @@
                 $scope.isCreatingItem = true;
                 $scope.setAllCategories();
             }
-
         }
 
         function cancelCreatingItem(){
