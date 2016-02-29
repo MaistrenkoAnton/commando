@@ -1,0 +1,46 @@
+{% load djangular_tags %}
+<div class="row">
+    <div class="thumbnail">
+        <h2>
+            <span ng-bind="currentItem.name"></span>
+            <span class="item-detail-delete-edit-buttons" ng-show="showEditDeleteItemButtons()">
+                <a href="#" ng-click="startEditingItem(currentItem)"><i class="fa fa-pencil">&nbsp;&nbsp;</i></a>
+                <a href="#" ng-click="deleteItem(currentItem)"><i class="fa fa-trash-o"></i></a>
+            </span>
+            <a href="#" class="btn btn-success pull-right" role="button" ng-click="addToCart(currentItem);">Add to Cart</a>
+        </h2>
+        <div ng-show="currentItem.stock.new_price" >
+            <h3><span class="label label-default"><strike>Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</strike></span></h3>
+            <h3>
+                <span class="label label-danger">
+                    <span class="glyphicon glyphicon-star-empty"></span>
+                    <strong>New price: {% angularjs %}{{ currentItem.stock.new_price }}{% endangularjs %}$</strong>
+                </span>
+            </h3>
+        </div>
+        <h3 ng-hide="currentItem.stock.new_price">Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</h3>
+        <img ng-src="{% angularjs %}{{ currentItem.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ currentItem.name }}{% endangularjs %} image">
+        <p>Quantity: {% angularjs %}{{ currentItem.quantity }}{% endangularjs %}</p>
+        <p class="running-out" ng-show="currentItem.running_out">Running out of stock!</p>
+        <div class="caption">
+            <p>
+                <i ng-repeat="star in currentItem.stars track by $index"
+                   ng-class="star == 'full' ? 'fa fa-star rating-stars' : (star == 'half' ? 'fa fa-star-half-o rating-stars' : 'fa fa-star-o rating-stars')"></i>
+                <span class="comments-total">Comments: {% angularjs %}{{ currentItem.comments_total }}{% endangularjs %}</span>
+            </p>
+            <h5><strong>Description:</strong></h5>
+            <p ng-bind="currentItem.description"></p>
+            <p class="row">
+                <button class="btn btn-info set-rate-button" ng-click="setRate(rateInput);">Set Rate</button>
+                <label class="radio-inline" ng-repeat="number in [1, 2, 3, 4, 5]">
+                    <input type="radio" ng-model="$parent.rateInput"
+                           value="{% angularjs %}{{ number }}{% endangularjs %}"> {% angularjs %}{{ number }}{% endangularjs %}
+                </label>
+                <button class="btn btn-success pull-right" ng-click="setComment(commentInput);">Leave Comment</button>
+                <br><br>
+                <textarea title="comment-input" class="form-control" rows="3" ng-model="commentInput"
+                          placeholder="Write your comment here" required></textarea>
+            </p>
+        </div>
+    </div>
+</div>

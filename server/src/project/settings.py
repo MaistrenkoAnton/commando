@@ -73,6 +73,8 @@ INSTALLED_APPS = [
     'catalogue',
     'authentication',
     'stores',
+    'cart',
+    'stock',
 ]
 
 REST_FRAMEWORK = {
@@ -194,8 +196,6 @@ CACHES = {
     },
 }
 
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
@@ -203,6 +203,8 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'haystack',
     },
 }
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 # Django REST JWT config
 # ----------------------------------------------------------------------------------------------------------------------

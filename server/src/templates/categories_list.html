@@ -1,0 +1,9 @@
+{% load djangular_tags %}
+<div class="list-group" ng-repeat = "category in categoriesList" ng-show="categoriesList.length > 0">
+    <a href="#" class="list-group-item" ng-click="setCurrentCategory(category);"
+       ng-class="{active: isCurrentCategory(category)}">
+        {% angularjs %}{{ category.name }}{% endangularjs %}
+        <span class="badge" ng-bind="category.facet"></span>
+    </a>
+</div>
+<button class="btn btn-block btn-success" ng-show="showCreateItemButton();" ng-click="startCreatingItem();">Create New Item</button>

@@ -1,87 +1,34 @@
 {% extends "index.html" %}
 {% load djangular_tags %}
 {% block content %}
-
+    <div ng-show="user" class="container-fluid">
+        <div class="row">
+            <a href="#" class="pull-right top-right-corner" ng-show="canShowCartButton();" ng-click="showCart();"><i class="fa fa-shopping-cart fa-5x"></i></a>
+        </div>
+    </div>
     <div class="container">
-        <div class="starter-template">
-            <h1 class="text-center">Category <strong ng-bind="catName"></strong></h1>
+        <div class="col-sm-3">
             <div class="row">
-                <div class="col-md-4">
-                    <h3>Categories: </h3>
-                    <div class="list-group" ng-repeat = "category in categories">
-                        <a href="#"  class="list-group-item" ng-click="categoryList(category.id, category.name)">{% angularjs %}{{ category.name }}{% endangularjs %}
-
-                            <span ng-repeat="counter in counterSet">
-                                <span ng-if="category.id==counter.id"><strong>({% angularjs %}{{ counter.val }}{% endangularjs %})</strong></span>
-                            </span>
-                        </a>
-                    </div>
-                    <p ng-hide="categories.length">List of Categories is empty</p>
-                    <button type="button" class="btn btn-info" ng-click="categoryList()">To Main</button>
-                </div>
-                <div class="col-md-4">
-                    <h3>Items: </h3>
-                    <div class="list-group" ng-repeat = "item in items">
-
-                        <a href="#" class="list-group-item" ng-click="itemDetail(item.id)" >
-                            <p ng-bind="item.name"></p>
-                            <p>Comments: <span ng-bind="item.comments_total"></span>&nbsp;&nbsp;Rate: <span ng-bind="item.average_rate"></span></p>
-                        </a>
-                    </div>
-                    <p ng-hide="items.length">List of Items is empty</p>
-                </div>
-                <div class="col-md-4">
-                    <h3>DetailItem: </h3>
-                    <div class="thumbnail" ng-show="detailItem">
-                            <p><a href="">Comments: <span ng-bind="detailItem.comments_total"></span></a></p>
-                            <p>Rate: <span ng-bind="detailItem.average_rate"></span></p>
-                        <img src="{% angularjs %}{{ detailItem.image_url }}{% endangularjs %}" alt="item image">
-                        <div class="caption">
-                            <h4>Item: <span ng-bind="detailItem.name"></span></h4>
-                            <p>Price: <span ng-bind="detailItem.price"></span></p>
-                            <p>Description: <span ng-bind="detailItem.description"></span></p>
-                            <p>Category_id: <span ng-bind="detailItem.category.id"></span></p>
-                            <p>Category_name: <span ng-bind="detailItem.category.name"></span></p>
-                        </div>
-                    </div>
-                    <div class="well"  ng-show="detailItem">
-                        <form class="form-inline" ng-submit="setRate(rateInput)">
-                            <div class="form-group">
-                                <label for="rate_1">1 - </label>
-                                <input type="radio" name="rates" class="form-control" ng-model="rateInput" id="rate_1" value="1">
-                            </div>
-                            <div class="form-group">
-                                <label for="rate_2">&nbsp;&nbsp;2 - </label>
-                                <input type="radio"  name="rates" class="form-control" ng-model="rateInput" id="rate_2" value="2">
-                            </div>
-                            <div class="form-group">
-                                <label for="rate_3">&nbsp;&nbsp;3 - </label>
-                                <input type="radio"  name="rates" class="form-control" ng-model="rateInput" id="rate_3" value="3">
-                            </div>
-                            <div class="form-group">
-                                <label for="rate_4">&nbsp;&nbsp;4 - </label>
-                                <input type="radio"  name="rates" class="form-control" ng-model="rateInput" id="rate_4" value="4">
-                            </div>
-                            <div class="form-group">
-                                <label for="rate_5">&nbsp;&nbsp;5 - </label>
-                                <input type="radio"  name="rates" class="form-control" ng-model="rateInput" id="rate_5" value="5">
-                            </div>
-                            <button type="submit" class="btn btn-info" >Set Rate</button>
-                        </form>
-                    </div>
-                    <div class="well" ng-show="detailItem">
-                        <form ng-submit="setComment(commentInput)">
-                            <div class="form-group">
-                                <label for="comment_input">Leave comment: </label>
-                                <textarea id="comment_input" class="form-control" rows="3" ng-model="commentInput" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-info">Leave Comment</button>
-                        </form>
-                    </div>
-
-                    <p ng-hide="detailItem">No selected Item</p>
-                </div>
+                {% include 'categories_breadcrumb.html' %}
             </div>
+            <div class="row">
+                {% include 'categories_list.html' %}
+            </div>
+        </div>
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemsList'">
+            {% include 'items_list.html' %}
+        </div>
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemDetails'">
+            {% include 'item_details.html' %}
+        </div>
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemCreate'">
+            {% include 'item-create-form.html' %}
+        </div>
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemEdit'">
+            {% include 'item-edit-form.html' %}
+        </div>
+        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'cart'">
+            {% include 'cart.html' %}
         </div>
     </div>
 {% endblock content %}

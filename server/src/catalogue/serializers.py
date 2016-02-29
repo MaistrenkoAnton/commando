@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Category, Item, Comment, Rate
-from stores.serializers import StoreListSerializer
+from stock.serializers import StockListSerializer
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -27,12 +27,12 @@ class ItemDetailSerializer(serializers.ModelSerializer):
     Get by id
     """
     category = CategoryListSerializer()
-    store = StoreListSerializer()
+    stock = StockListSerializer()
 
     class Meta:
         model = Item
         fields = ['id', 'name', 'price', 'category', 'description', 'image_url', 'comments_total', 'average_rate',
-                  'store', 'quantity', 'running_out_level', 'running_out']
+                  'store', 'quantity', 'running_out_level', 'running_out', 'stock']
 
 
 class ItemAddSerializer(serializers.ModelSerializer):

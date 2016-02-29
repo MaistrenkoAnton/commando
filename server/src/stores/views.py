@@ -37,7 +37,7 @@ class StoreItemsListView(APIView):
 
     def get(self, request, category_pk, store_pk):
         response_data = self.serializer(self._get_queryset(category_pk, store_pk), many=True).data
-        return Response(response_data)
+        return Response({'data': response_data})
 
     def _get_queryset(self, category_pk, store_pk):
         return SearchQuerySet().models(self.model).filter(category=category_pk).filter(store=store_pk)

@@ -1,0 +1,11 @@
+<h2>CATEGORIES</h2>
+<p ng-show="categoriesList.length == 0">No items to show</p>
+<ol class="breadcrumb" ng-show="categoriesList.length > 0">
+    <li>
+        <a href="" ng-click="setCategoryBack();" ng-class="{active: noParentCategories()}">Home</a>
+    </li>
+    <li ng-repeat="parentCategory in parentCategoriesList">
+        <span ng-bind="parentCategory.name" ng-show="$last"></span>
+        <a href="#" ng-bind="parentCategory.name" ng-click="setCategoryBack(parentCategory);" ng-hide="$last"></a>
+    </li>
+</ol>

@@ -14,7 +14,7 @@ django-angular==0.7.16
 django-cacheback==1.0
 django-celery==3.1.17
 django-cors-headers==1.1.0
--e git+https://github.com/toastdriven/django-haystack.git@f3dba1efd88a40d33d828a1cb631c3bb8f417ee0#egg=django_haystack-master
+-e git+https://github.com/toastdriven/django-haystack.git@12f54227903acdfcc9f5dc1ae918cec9396b2900#egg=django_haystack-master
 django-mptt==0.8.0
 django-redis-cache==1.6.5
 django-rest-swagger==0.3.5

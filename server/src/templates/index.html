@@ -8,11 +8,14 @@
     <title>Shop test</title>
 </head>
 <body ng-controller="myCtrl">
-{% include "nav-bar.html" %}
+<div class="ng-cloak">
+    {% include "nav-bar.html" %}
 
-{% block content %}
-{% endblock content %}
+    {% block content %}
+    {% endblock content %}
 
-{% include "js.html" %}
+    {% include "js.html" %}
+</div>
+
 </body>
 </html>

@@ -8,7 +8,7 @@ class CategoryListHaystackSerializer(HaystackSerializer):
     """
     class Meta:
         index_classes = [CategoryIndex]
-        fields = ['id', 'name', 'parent']
+        fields = ['cat_id', 'name', 'parent']
 
 
 class ItemListHaystackSerializer(HaystackSerializer):
@@ -19,6 +19,6 @@ class ItemListHaystackSerializer(HaystackSerializer):
     class Meta:
         index_classes = [ItemIndex]
         fields = [
-            'id', 'name', 'price', 'image_url', 'category', 'comments_total', 'average_rate', 'quantity',
-            'running_out_level', 'running_out'
+            'item_id', 'name', 'price', 'image_url', 'category', 'comments_total', 'average_rate', 'quantity', 'store', 'description',
+            'running_out_level', 'running_out', 'new_price',
         ]
