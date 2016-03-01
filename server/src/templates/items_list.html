@@ -13,16 +13,16 @@
                         <a href="#" ng-click="deleteItem(item);"><i class="fa fa-trash-o"></i></a>
                     </span>
                 </h3>
-                <div ng-show="item.new_price ">
+                <div ng-show="item.newPrice ">
                         <p>
                             <strike>Price: {% angularjs %}{{ item.price }}{% endangularjs %}$</strike>
                             <span class="label label-danger">
                                 <span class="glyphicon glyphicon-star-empty"></span>
-                                <strong>New price: {% angularjs %}{{ item.new_price }}{% endangularjs %}$</strong>
+                                <strong>New price: {% angularjs %}{{ item.newPrice }}{% endangularjs %}$</strong>
                             </span>
                         </p>
                 </div>
-                <p ng-hide="item.new_price">Price: {% angularjs %}{{ item.price }}{% endangularjs %}$</p>
+                <p ng-hide="item.newPrice">Price: {% angularjs %}{{ item.price }}{% endangularjs %}$</p>
                 <p>
                     <i ng-repeat="star in item.stars track by $index"
                        ng-class="star == 'full' ? 'fa fa-star rating-stars' : (star == 'half' ? 'fa fa-star-half-o rating-stars' : 'fa fa-star-o rating-stars')"></i>

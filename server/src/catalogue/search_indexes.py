@@ -19,7 +19,7 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     quantity = indexes.IntegerField(model_attr='quantity')
     running_out_level = indexes.IntegerField(model_attr='running_out_level')
     running_out = indexes.BooleanField(model_attr='running_out')
-    new_price = indexes.IntegerField(model_attr='stock__new_price', default=0)
+    discount = indexes.IntegerField(model_attr='stock__discount', default=0)
 
     def get_model(self):
         return Item

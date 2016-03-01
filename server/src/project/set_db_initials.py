@@ -1,71 +1,151 @@
-from catalogue.models import *
-from stores.models import *
-import random
+import datetime
+from django.utils import timezone
+import factory
+from catalogue.models import Category, Item
+from stores.models import Store
+from stock.models import Stock
+from cart.models import Cart
+import factory.fuzzy
 
 
-def random_word(length):
+class RandomStoreFactory(factory.django.DjangoModelFactory):
     """
-    Function generates pseudo-rangom string
+    Generate store object for test purposes
     """
-    import random
-    import string
-    return ''.join(random.choice(string.lowercase) for i in range(length))
+    class Meta:
+        model = Store
+
+    title = factory.Faker('company')
+    margin = factory.fuzzy.FuzzyDecimal(10.00, 45.00)
 
 
-def random_number(x, y):
+class RandomCategoryFactory(factory.django.DjangoModelFactory):
     """
-    Function generates pseudo-random integer
+    Generate Category object for test purposes
     """
-    return random.randint(x, y)
+    class Meta:
+        model = Category
+
+    name = factory.fuzzy.FuzzyText(
+        prefix=("Cat.  "),
+        length=factory.fuzzy.FuzzyInteger(6, 10).fuzz()
+    )
+    parent = None
 
 
-def set_stores(quantity=10):
-    for i in xrange(quantity):
-        store_title = str(i + 1) + " store"
-        margin = random_number(10, 50) + random_number(1, 9)/100
-        Store.objects.create(title=store_title, margin=margin)
-    return True
+class RandomItemFactory(factory.django.DjangoModelFactory):
+    """
+    Generate Item object for test purposes
+    """
+    class Meta:
+        model = Item
+
+    name = factory.Faker('word')
+    price = factory.fuzzy.FuzzyDecimal(100.00, 5000.00)
+    description = factory.Faker('text')
+    store = factory.Iterator(Store.objects.all())
+    category = factory.Iterator(Category.objects.filter(level=2))
+    quantity = factory.fuzzy.FuzzyInteger(0, 500)
+    running_out_level = factory.fuzzy.FuzzyInteger(10, 50)
+    average_rate = factory.fuzzy.FuzzyFloat(0.0, 5.0)
 
 
-def set_categories():
-    sub_categories_qty = 3
-    top = Category.objects.create(name='top')
-    mids = []
-    for i in xrange(sub_categories_qty):
-        mid_name = "mid " + str(i + 1)
-        mids.append(Category.objects.create(name=mid_name, parent=top))
-        for j in xrange(sub_categories_qty):
-            bot_name = "bot " + str(i + 1)+ '.' + str(j + 1)
-            Category.objects.create(name=bot_name, parent=mids[-1])
-    return True
+class RandomStockFactory(factory.django.DjangoModelFactory):
+    """
+    Generate Stock object for test purposes
+    """
+    class Meta:
+        model = Stock
+
+    title = factory.Faker('word')
+    store = factory.Iterator(Store.objects.all())
+    description = factory.Faker('text')
+    discount = factory.fuzzy.FuzzyInteger(5, 90)
+    start = factory.fuzzy.FuzzyDateTime(timezone.now()).start_dt
+    finish = factory.fuzzy.FuzzyDateTime(timezone.now(),
+                                         timezone.now() + datetime.timedelta(120))
 
 
-def set_items(quantity=10):
-    categories = [
-        Category.objects.get(name='bot 1.1'),
-        Category.objects.get(name='bot 1.2')
-    ]
-    store = Store.objects.get(title='1 store')
+class SetUpTestDb(object):
+    """
+    Generate values for DataBase for test purposes
+    """
+    @staticmethod
+    def clear_all():
+        Cart.objects.all().delete()
+        Item.objects.all().delete()
+        Stock.objects.all().delete()
+        Category.objects.all().delete()
+        Store.objects.all().delete()
+        return True
 
-    for i in xrange(2):
-        for j in xrange(quantity/2):
-            description = ''
-            for k in xrange(25):
-                description += (' ' + random_word(random_number(2, 15)))
-            Item.objects.create(
-                name=("item " + str((j+1) * (i+1))),
-                price=(random_number(100, 5000) + random_number(1, 9)/100),
-                description=description,
-                category=categories[i],
-                store=store,
-                quantity=random_number(1, 1000),
-                running_out_level=random_number(10, 50)
-            )
-    return True
+    @staticmethod
+    def set_stores(quantity=5):
+        """
+        Generate batch of stores
+        """
+        RandomStoreFactory.create_batch(quantity)
+        return True
 
+    @staticmethod
+    def set_categories(trees=3):
+        """
+        Generate batch of categories with 3 levels
+        """
+        parents = RandomCategoryFactory.create_batch(trees)
+        for i in xrange(len(parents)):
+            mid_level = RandomCategoryFactory.create_batch(trees, parent=parents[i])
+            for j in xrange(len(mid_level)):
+                RandomCategoryFactory.create_batch(trees, parent=mid_level[j])
+        return True
 
-def set_all_data():
-    set_stores()
-    set_categories()
-    set_items()
-    return True
+    @staticmethod
+    def set_items():
+        """
+        Generate batch of items for existing stores and categories
+        """
+        quantity = Store.objects.count() * Category.objects.filter(level=2).count() * 9
+        if quantity == 0:
+            return False
+        else:
+            RandomItemFactory.create_batch(quantity)
+            return True
+
+    @staticmethod
+    def set_stocks():
+        """
+        Generate batch of stocks for existing stores
+        """
+        quantity = Store.objects.count() * 3
+        if quantity == 0 or Item.objects.count() == 0:
+            return False
+        else:
+            RandomStockFactory.create_batch(quantity)
+        return True
+
+    @staticmethod
+    def relate_stock_items():
+        """
+        Generate Stock - Item relations for existing items, stores and stocks
+        """
+        items = Item.objects.all()
+        for item in items:
+            if not item.pk % 5:
+                stocks = Stock.objects.filter(store_id=item.store_id)
+                index_tmp = factory.fuzzy.FuzzyInteger(0, stocks.count() - 1).fuzz()
+                item.stock = stocks[index_tmp]
+                item.save()
+        return True
+
+    @staticmethod
+    def set_test_data(stores_qty=5, categories_trees=3):
+        """
+        Generate full test data for DataBase
+        """
+        SetUpTestDb.clear_all()
+        SetUpTestDb.set_stores(stores_qty)
+        SetUpTestDb.set_categories(categories_trees)
+        SetUpTestDb.set_items()
+        SetUpTestDb.set_stocks()
+        SetUpTestDb.relate_stock_items()
+        return True

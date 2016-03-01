@@ -1,4 +1,5 @@
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import views
 from rest_framework import status
 from .models import Cart
@@ -10,6 +11,7 @@ class CartAddView(views.APIView):
     """
     Create records for purchased items
     """
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         """
