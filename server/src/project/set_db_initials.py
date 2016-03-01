@@ -108,10 +108,6 @@ class SetUpTestDb(object):
         if quantity == 0:
             return False
         else:
-            print "======================================================"
-            print "You can make some coffee. And drink it."
-            print "It will take several minutes."
-            print "======================================================"
             RandomItemFactory.create_batch(quantity)
             return True
 
