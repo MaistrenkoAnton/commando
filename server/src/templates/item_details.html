@@ -9,16 +9,16 @@
             </span>
             <a href="#" class="btn btn-success pull-right" role="button" ng-click="addToCart(currentItem);">Add to Cart</a>
         </h2>
-        <div ng-show="currentItem.stock.new_price" >
+        <div ng-show="currentItem.newPrice" >
             <h3><span class="label label-default"><strike>Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</strike></span></h3>
             <h3>
                 <span class="label label-danger">
                     <span class="glyphicon glyphicon-star-empty"></span>
-                    <strong>New price: {% angularjs %}{{ currentItem.stock.new_price }}{% endangularjs %}$</strong>
+                    <strong>New price: {% angularjs %}{{ currentItem.newPrice }}{% endangularjs %}$</strong>
                 </span>
             </h3>
         </div>
-        <h3 ng-hide="currentItem.stock.new_price">Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</h3>
+        <h3 ng-hide="currentItem.newPrice">Price: {% angularjs %}{{ currentItem.price }}{% endangularjs %}$</h3>
         <img ng-src="{% angularjs %}{{ currentItem.image_url }}{% endangularjs %}" alt="{% angularjs %}{{ currentItem.name }}{% endangularjs %} image">
         <p>Quantity: {% angularjs %}{{ currentItem.quantity }}{% endangularjs %}</p>
         <p class="running-out" ng-show="currentItem.running_out">Running out of stock!</p>

@@ -257,6 +257,20 @@
             return starsArray;
         }
 
+        function toFixed(value, precision) {
+            var precision = precision || 0,
+                power = Math.pow(10, precision),
+                absValue = Math.abs(Math.round(value * power)),
+                result = (value < 0 ? '-' : '') + String(Math.floor(absValue / power));
+
+            if (precision > 0) {
+                var fraction = String(absValue % power),
+                    padding = new Array(Math.max(precision - fraction.length, 0) + 1).join('0');
+                result += '.' + padding + fraction;
+            }
+            return result;
+        }
+
         function getItemsList(category){
             ItemsFactory.getItemsList(category, $scope.currentStore).then(function success(response){
                 $scope.itemsList = response.data.data;
@@ -265,6 +279,10 @@
                 }
                 if ($scope.itemsList){
                     for (var i = 0; i < $scope.itemsList.length; i++){
+                        if ($scope.itemsList[i].discount > 0){
+                            var newPrice = $scope.itemsList[i].price * (100 - $scope.itemsList[i].discount) / 100;
+                            $scope.itemsList[i].newPrice = toFixed(newPrice, 2);
+                        }
                         $scope.itemsList[i].stars = generateStarsArray($scope.itemsList[i].average_rate)
                     }
                 }
@@ -274,6 +292,10 @@
         function getItemDetails(item){
             ItemsFactory.getItemDetails(item).then(function success(response){
                 $scope.currentItem = response.data;
+                if ($scope.currentItem.stock.discount){
+                    var newPrice = $scope.currentItem.price * (100 - $scope.currentItem.stock.discount) / 100;
+                    $scope.currentItem.newPrice = toFixed(newPrice, 2);
+                }
                 $scope.currentItem.stars = generateStarsArray($scope.currentItem.average_rate);
                 $scope.rateInput = null;
                 if ($scope.user){
