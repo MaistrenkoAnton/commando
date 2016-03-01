@@ -74,7 +74,7 @@ class ItemAddView(generics.CreateAPIView):
     """
     Add Item
     """
-    # permission_classes = (IsAdminUser,)
+    permission_classes = (IsAdminUser,)
     queryset = Item.objects.all()
     serializer_class = ItemAddSerializer
 
@@ -83,7 +83,7 @@ class ItemUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
     Update Item
     """
-    # permission_classes = (IsAdminUser,)
+    permission_classes = (IsAdminUser,)
     queryset = Item.objects.all()
     serializer_class = ItemAddSerializer
 
