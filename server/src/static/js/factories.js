@@ -188,7 +188,7 @@
         }
     });
 
-    app.factory('ItemsFactory', function ItemsFactory($http, djangoUrl) {
+    app.factory('ItemsFactory', function ItemsFactory($http, djangoUrl, $location) {
         'use strict';
         return {
             getItemsList: getItemsList,
@@ -221,7 +221,7 @@
             }
             var url = djangoUrl.reverse('catalogue:item_detail', [itemId]);
             return $http.get(url)
-                .then(successCallbackHandler)
+                .then($location.path(url), successCallbackHandler)
         }
 
         function deleteItem(itemId){

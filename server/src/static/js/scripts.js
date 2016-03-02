@@ -1,9 +1,10 @@
 (function(){
     'use strict';
-    var app = angular.module('myApp', ['factories', 'ng.django.urls'], function config($httpProvider){
+    var app = angular.module('myApp', ['factories', 'ng.django.urls'], function config($httpProvider, $locationProvider){
         $httpProvider.interceptors.push('AuthInterceptor');
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+        $locationProvider.html5Mode({enabled: true, requireBase: false}).hashPrefix('!');
     });
     app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, StoresFactory,
                                       CategoriesFactory, ItemsFactory, CartFactory){
