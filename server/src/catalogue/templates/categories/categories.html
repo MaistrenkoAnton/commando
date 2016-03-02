@@ -1,20 +1,17 @@
 {% load djangular_tags %}
 <div class="col-md-3">
     <p class="lead">Shop Name</p>
+
+
+    <abn-tree tree-data="my_data"></abn-tree>
+
+
     <div id="MainMenu">
         <div class="list-group panel">
-
-
-
-
-
-
-
             <a href="#demo3" class="list-group-item list-group-item-success" data-toggle="collapse" data-parent="#MainMenu">Item 3</a>
 
             <div class="collapse" id="demo3">
                 <a href="#SubMenu1" class="list-group-item" data-toggle="collapse" data-parent="#SubMenu1">Subitem 1 <i class="fa fa-caret-down"></i></a>
-
                 <div class="collapse list-group-submenu" id="SubMenu1">
                     <a href="#" class="list-group-item" data-parent="#SubMenu1">Subitem 1 a</a>
                     <a href="#" class="list-group-item" data-parent="#SubMenu1">Subitem 2 b</a>
@@ -28,8 +25,6 @@
                 <a href="javascript:;" class="list-group-item">Subitem 2</a>
                 <a href="javascript:;" class="list-group-item">Subitem 3</a>
             </div>
-
-
             <a href="#demo4" class="list-group-item list-group-item" data-toggle="collapse" data-parent="#MainMenu">Item 4</a>
             <div class="collapse" id="demo4">
                 <a href="" class="list-group-item">Subitem 1</a>

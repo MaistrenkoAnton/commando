@@ -1,6 +1,6 @@
 (function(){
     'use strict';
-    var app = angular.module('myApp', ['factories', 'ng.django.urls'], function config($httpProvider, $locationProvider){
+    var app = angular.module('myApp', ['factories', 'ng.django.urls', 'angularBootstrapNavTree'], function config($httpProvider, $locationProvider){
         $httpProvider.interceptors.push('AuthInterceptor');
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -11,7 +11,10 @@
         'use strict';
 
 
-
+        $scope.my_data = [{
+            label: 'Languages',
+            children: ['Jade','Less','Coffeescript']
+        }];
 
         // user authorization block
         // ======================================================================
@@ -175,6 +178,7 @@
         $scope.getCategories = getCategories;
         $scope.getItemsList = getItemsList;
         $scope.getItemDetails = getItemDetails;
+        $scope.transformCategoriesToTree = transformCategoriesToTree;
 
         function isCurrentItem(item) {
             return $scope.currentItem && item.name === $scope.currentItem.name;
@@ -195,6 +199,15 @@
             $scope.getCategories();
             $scope.getItemsList(category);
             $scope.itemsFieldState = 'itemsList';
+        }
+
+        function transformCategoriesToTree(categories){
+            var roots = [];
+            categories.forEach(
+                function(item){
+
+                }
+            )
         }
 
         function getCategories(){

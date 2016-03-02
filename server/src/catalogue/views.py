@@ -1,9 +1,10 @@
 from django.views.generic import TemplateView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from django.db.models import Max
 from rest_framework import status
 from rest_framework import generics
-from .serializers import (CategoryAddSerializer, ItemAddSerializer, ItemDetailSerializer,
+from .serializers import (CategoryAddSerializer, ItemAddSerializer,
                           CommentAddSerializer, RateAddSerializer)
 from .models import Item, Category, Comment, Rate
 from .haystack_serializers import ItemListHaystackSerializer, CategoryListHaystackSerializer
@@ -32,7 +33,9 @@ class CategoriesListView(APIView):
     def get(self, request):
         response_data = self.serializer(self._get_queryset(), many=True).data
         facet = SearchQuerySet().models(self.model).facet('parent').facet_counts()
-        return Response({'data': response_data, 'facet': facet})
+        trees_quantity = Category.objects.all().aggregate(Max('tree_id'))
+        trees_quantity = trees_quantity.popitem()
+        return Response({'data': response_data, 'facet': facet, 'trees_quantity': trees_quantity[-1]})
 
     def _get_queryset(self):
         return SearchQuerySet().models(self.model).all()
