@@ -1,0 +1,13 @@
+<modal title="Register form" visible="showModalRegister">
+    <form role="form" ng-submit="register(username, password)" autocomplete="off">
+        <div class="form-group">
+            <label for="login">Login</label>
+            <input type="text" class="form-control" id="login" placeholder="Login" ng-model="username" required/>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Password" ng-model="password" required/>
+        </div>
+        <button type="submit" class="btn btn-default">Register</button>
+    </form>
+</modal>

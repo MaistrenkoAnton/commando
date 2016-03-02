@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="myApp">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% include "css.html" %}
-    <title>Shop test</title>
+    {% include 'meta.html' %}
+    <title>
+        {% block head_title %}
+            Shop Test
+        {% endblock head_title %}
+    </title>
+    {% include 'css.html' %}
 </head>
-<body>
+<body ng-controller="myCtrl">
+{% include 'navigation-top.html' %}
 {% block content %}
 {% endblock content %}
-{% include "js.html" %}
+{% include 'footer.html' %}
+{% include 'js.html' %}
 </body>
 </html>

@@ -168,21 +168,11 @@
     app.factory('CategoriesFactory', function CategoriesFactory($http, djangoUrl) {
         'use strict';
         return {
-            getCategoriesList: getCategoriesList,
-            setAllCategories: setAllCategories
+            getCategories: getCategories
         };
 
-        function getCategoriesList(parentCategory){
-            var url = djangoUrl.reverse('catalogue:category_list_root');
-            if (parentCategory){
-                url = djangoUrl.reverse('catalogue:category_list', [parentCategory.cat_id])
-            }
-            return $http.get(url)
-                .then(successCallbackHandler)
-        }
-
-        function setAllCategories(){
-            var url = djangoUrl.reverse('catalogue:all_categories_list');
+        function getCategories(){
+            var url = djangoUrl.reverse('catalogue:categories_list');
             return $http.get(url)
                 .then(successCallbackHandler)
         }

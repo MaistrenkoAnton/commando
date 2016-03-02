@@ -9,12 +9,20 @@
     app.controller('myCtrl', function($scope, $http, UserFactory, CommentFactory, RateFactory, StoresFactory,
                                       CategoriesFactory, ItemsFactory, CartFactory){
         'use strict';
+
+
+
+
         // user authorization block
         // ======================================================================
         $scope.login = login;
         $scope.logout = logout;
         $scope.register = register;
+        $scope.toggleAuthForm = toggleAuthForm;
+        $scope.hideAuthForms = hideAuthForms;
         $scope.serverError = '';
+        $scope.showModalLogin = false;
+        $scope.showModalRegister = false;
 
         $scope.userIsAuthenticated = userIsAuthenticated;
         $scope.userIsStaff = userIsStaff;
@@ -24,6 +32,11 @@
             $scope.user = response.data.user;
             $scope.user.canSetRate = true;
         });
+
+        function hideAuthForms(){
+            $scope.showModalLogin = false;
+            $scope.showModalRegister = false;
+        }
 
         function userIsAuthenticated(){
             return $scope.user ? true: false;
@@ -37,6 +50,18 @@
         $scope.signUpForm = false;
         $scope.sign_link = 'Sign Up';
         $scope.setForm = setForm;
+
+        function toggleAuthForm(formType){
+
+            switch (formType){
+                case 'login':
+                    $scope.showModalLogin = !$scope.showModalLogin;
+                    break;
+                case 'register':
+                    $scope.showModalRegister = !$scope.showModalRegister;
+                    break;
+            }
+        }
 
         function setForm(){
             $scope.signInForm = !$scope.signInForm;
@@ -136,40 +161,20 @@
 
         $scope.itemsList = [];
         $scope.categoriesList = [];
-        $scope.parentCategoriesList = [];
         $scope.currentCategory = null;
         $scope.currentItem = null;
         $scope.detailItem = null;
-        $scope.isCurrentCategory = null;
         $scope.isCurrentItem = null;
-        $scope.canShowActiveCategory = false;
         $scope.itemsFieldState = null;
 
-        $scope.isCurrentCategory = isCurrentCategory;
         $scope.isCurrentItem = isCurrentItem;
         $scope.setCurrentCategory = setCurrentCategory;
-        $scope.setCategoryBack = setCategoryBack;
-        $scope.noParentCategories = noParentCategories;
-        $scope.parentCategoryActive = parentCategoryActive;
         $scope.noItems = noItems;
         $scope.setCurrentItem = setCurrentItem;
         $scope.resetItemData = resetItemData;
-        $scope.resetCategoriesData = resetCategoriesData;
-        $scope.getCategoriesList = getCategoriesList;
+        $scope.getCategories = getCategories;
         $scope.getItemsList = getItemsList;
         $scope.getItemDetails = getItemDetails;
-
-        function noParentCategories(){
-            return $scope.parentCategoriesList.length === 0;
-        }
-
-        function parentCategoryActive(category){
-            return $scope.parentCategoriesList.length > 0 && category === $scope.parentCategoriesList[-1];
-        }
-
-        function isCurrentCategory(category) {
-            return $scope.currentCategory && category.name === $scope.currentCategory.name && $scope.canShowActiveCategory === true;
-        }
 
         function isCurrentItem(item) {
             return $scope.currentItem && item.name === $scope.currentItem.name;
@@ -185,32 +190,15 @@
         }
 
         function setCurrentCategory(category) {
-            if ($scope.canShowActiveCategory){
-                $scope.parentCategoriesList.pop();
-            }
-            $scope.cancelCreatingItem();
-            $scope.cancelEditingItem();
-            $scope.parentCategoriesList.push(category);
             $scope.currentCategory = category;
             $scope.resetItemData();
-            $scope.getCategoriesList(category);
-            $scope.itemsFieldState = '';
+            $scope.getCategories();
             $scope.getItemsList(category);
+            $scope.itemsFieldState = 'itemsList';
         }
 
-        function setCategoryBack(category){
-            if (category){
-                var targetCategoryIndex = $scope.parentCategoriesList.indexOf(category);
-                $scope.parentCategoriesList.splice(-targetCategoryIndex);
-                $scope.setCurrentCategory(category)
-            }
-            else {
-                $scope.resetCategoriesData();
-            }
-        }
-
-        function getCategoriesList(category){
-            CategoriesFactory.getCategoriesList(category).then(function success(response){
+        function getCategories(){
+            CategoriesFactory.getCategories().then(function success(response){
                 if (response.data.data.length > 0){
                     $scope.categoriesList = response.data.data;
                     $scope.canShowActiveCategory = false;
@@ -306,16 +294,7 @@
         }
 
         // initialize categories and items data on start
-        getCategoriesList();
-
-        function resetCategoriesData(){
-            $scope.categoriesList = [];
-            $scope.parentCategoriesList = [];
-            $scope.currentCategory = null;
-            $scope.itemsFieldState = '';
-            $scope.getCategoriesList();
-            $scope.resetItemData();
-        }
+        getCategories();
 
         function resetItemData(){
             $scope.itemsList = [];
@@ -325,8 +304,8 @@
                 $scope.user.canSetRate = false;
             }
             $scope.rateInput = null;
-            cancelCreatingItem();
-            cancelEditingItem();
+            $scope.cancelCreatingItem();
+            $scope.cancelEditingItem();
             if ($scope.newItem) {$scope.newItem = null;}
         }
 
@@ -468,14 +447,14 @@
         }
 
         function setAllCategories(item){
-            CategoriesFactory.setAllCategories().then(function success(response){
+            CategoriesFactory.getCategories().then(function success(response){
                 $scope.allCategories = {
                     availableOptions: response.data.data
                 };
                 if (item){
                     for (var i = 0; i < $scope.allCategories.availableOptions.length; i++){
                         if (item.category === $scope.allCategories.availableOptions[i].cat_id ||
-                            item.category.id === $scope.allCategories.availableOptions[i].cat_id){
+                            item.category.cat_id === $scope.allCategories.availableOptions[i].cat_id){
                             $scope.editedItem.category = $scope.allCategories.availableOptions[i];
                         }
                     }
@@ -522,7 +501,6 @@
             $scope.cancelCreatingItem();
             $scope.cancelEditingItem();
             $scope.currentStore = store;
-            $scope.resetCategoriesData();
         }
 
         // CART
@@ -610,5 +588,47 @@
 
         // =======================================================================
 
+    });
+
+    app.directive('modal', function () {
+        return {
+            template: '<div class="modal fade">' +
+            '<div class="modal-dialog">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header">' +
+            '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
+            '<h4 class="modal-title">{{ title }}</h4>' +
+            '</div>' +
+            '<div class="modal-body" ng-transclude></div>' +
+            '</div>' +
+            '</div>' +
+            '</div>',
+            restrict: 'E',
+            transclude: true,
+            replace:true,
+            scope:true,
+            link: function postLink(scope, element, attrs) {
+                scope.title = attrs.title;
+
+                scope.$watch(attrs.visible, function(value){
+                    if(value == true)
+                        $(element).modal('show');
+                    else
+                        $(element).modal('hide');
+                });
+
+                $(element).on('shown.bs.modal', function(){
+                    scope.$apply(function(){
+                        scope.$parent[attrs.visible] = true;
+                    });
+                });
+
+                $(element).on('hidden.bs.modal', function(){
+                    scope.$apply(function(){
+                        scope.$parent[attrs.visible] = false;
+                    });
+                });
+            }
+        };
     });
 })();

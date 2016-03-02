@@ -111,6 +111,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'authentication/templates'),
+            os.path.join(BASE_DIR, 'catalogue/templates'),
+            os.path.join(BASE_DIR, 'cart/templates'),
             os.path.join(BASE_DIR, 'stores/templates'),
         ],
         'APP_DIRS': True,

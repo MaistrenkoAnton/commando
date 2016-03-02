@@ -1,0 +1,42 @@
+<!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Shop Test</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#">About</a>
+                    </li>
+                    <li>
+                        <a href="#">Services</a>
+                    </li>
+                    <li>
+                        <a href="#">Contact</a>
+                    </li>
+                </ul>
+
+                <p class="navbar-text navbar-right">
+                    <a href="#" class="navbar-link" ng-hide="user" ng-click="toggleAuthForm('register')">Register</a>
+                    <a href="#" class="navbar-link" ng-show="user" ng-click="logout()">Logout</a>
+                </p>
+                <p class="navbar-text navbar-right">&nbsp;|&nbsp;</p>
+                <p class="navbar-text navbar-right" ng-hide="user">
+                    <a href="#" class="navbar-link" ng-click="toggleAuthForm('login')">Login</a>
+                </p>
+                <p class="navbar-text navbar-right" ng-show="user" ng-bind="user.username"></p>
+            </div>
+
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>

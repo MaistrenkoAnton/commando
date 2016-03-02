@@ -47,6 +47,12 @@ class CategoryIndex(indexes.SearchIndex, indexes.Indexable):
     cat_id = indexes.IntegerField(model_attr='pk')
     name = indexes.CharField(model_attr='name', faceted=True)
     parent = indexes.CharField(model_attr='parent__id', default='None', faceted=True)
+    tree_id = indexes.IntegerField(model_attr='tree_id')
+    is_child_node = indexes.BooleanField(model_attr='is_child_node')
+    is_leaf_node = indexes.BooleanField(model_attr='is_leaf_node')
+    is_root_node = indexes.BooleanField(model_attr='is_root_node')
+    level = indexes.IntegerField(model_attr='level')
+
 
     def get_model(self):
         return Category

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Category, Item, Comment, Rate
 from stock.serializers import StockListSerializer
+from .haystack_serializers import CategoryListHaystackSerializer
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -9,7 +10,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Category
-        fields = ['id', 'name', 'parent']
+        fields = ['id', 'name', 'parent', 'tree_id', 'is_child_node', 'is_leaf_node', 'is_root_node', 'level']
 
 
 class CategoryAddSerializer(serializers.ModelSerializer):
@@ -26,7 +27,7 @@ class ItemDetailSerializer(serializers.ModelSerializer):
     Detail Item
     Get by id
     """
-    category = CategoryListSerializer()
+    category = CategoryListHaystackSerializer()
     stock = StockListSerializer()
 
     class Meta:

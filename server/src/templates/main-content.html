@@ -1,34 +1,47 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
 {% load djangular_tags %}
+{#{% block head_title %}#}
+{#    Lead details |{{ block.super }}#}
+{#{% endblock %}#}
+
+<!-- Page Content -->
 {% block content %}
-    <div ng-show="user" class="container-fluid">
-        <div class="row">
-            <a href="#" class="pull-right top-right-corner" ng-show="canShowCartButton();" ng-click="showCart();"><i class="fa fa-shopping-cart fa-5x"></i></a>
+
+<div class="container">
+    <div class="row">
+        {% include 'categories/categories.html' %}
+
+
+        <div class="col-md-9">
+{#            <div ng-if="itemsFieldState == 'loginForm'">#}
+{##}
+{#            </div>#}
+{#            <div ng-if="itemsFieldState == 'registerForm'">#}
+{##}
+{#            </div>#}
+{#            <div ng-if="itemsFieldState == 'itemsList'">#}
+{##}
+{#            </div>#}
+{#            <div ng-if="itemsFieldState == 'itemDetails'">#}
+{##}
+{#            </div>#}
+{#            <div ng-if="itemsFieldState == 'itemCreate'">#}
+{##}
+{#            </div>#}
+{#            <div ng-if="itemsFieldState == 'itemEdit'">#}
+{##}
+{#            </div>#}
+            {% include 'register-form.html' %}
+            {% include 'login-form.html' %}
+            {% include 'carousel-home.html' %}
+
+            {% include 'items/items-list.html' %}
+            {% include 'items/item-detail.html' %}
+
         </div>
+
     </div>
-    <div class="container">
-        <div class="col-sm-3">
-            <div class="row">
-                {% include 'categories_breadcrumb.html' %}
-            </div>
-            <div class="row">
-                {% include 'categories_list.html' %}
-            </div>
-        </div>
-        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemsList'">
-            {% include 'items_list.html' %}
-        </div>
-        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemDetails'">
-            {% include 'item_details.html' %}
-        </div>
-        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemCreate'">
-            {% include 'item-create-form.html' %}
-        </div>
-        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'itemEdit'">
-            {% include 'item-edit-form.html' %}
-        </div>
-        <div class="col-sm-8 col-sm-offset-1" ng-if="itemsFieldState == 'cart'">
-            {% include 'cart.html' %}
-        </div>
-    </div>
+
+</div>
+<!-- /.container -->
 {% endblock content %}
